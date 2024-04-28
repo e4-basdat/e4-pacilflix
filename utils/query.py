@@ -28,12 +28,12 @@ def map_cursor(cursor):
     return [dict(row) for row in cursor.fetchall()]
 
 
-def query(query_str: str):
+def query(query_str: str, parameter: tuple = tuple()):
     result = []
     with connection.cursor(cursor_factory=RealDictCursor) as cursor:
         cursor.execute("SET search_path TO pacilflix")
         try:
-            cursor.execute(query_str)
+            cursor.execute(query_str, parameter)
             # Handling SELECT queries
             if query_str.strip().upper().startswith("SELECT"):
                 result = map_cursor(cursor)

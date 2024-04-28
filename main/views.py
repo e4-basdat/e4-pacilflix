@@ -1,8 +1,12 @@
 from django.shortcuts import render
 from utils.query import query
 
+
 def show_main(request):
-    data = query("SELECT * FROM contributors")
-    context = {"data": data}
+    context = {
+        "is_logged_in": False
+    }
+    if "username" in request.session:
+        context["is_logged_in"] = True
+        context["username"] = request.session["username"]
     return render(request, "main.html", context)
-# Create your views here.
