@@ -4,10 +4,10 @@
             <a href="/" class="inline font-inter_tight font-bold text-2xl text-white"><span class="bg-gradient-to-r from-blue-500 to-red-500 text-transparent bg-clip-text">PacilFlix</span> - E4</a>
         </div>
         <div class="flex font-semibold font-inter_tight items-center text-white gap-12 pl-14">
-            {% if not is_authenticated %}
+            {% if is_guest %}
             <a class="nav-btn relative after:content-[''] after:bg-white after:h-[2px] after:w-[0%] after:left-0 after:-bottom-[5px] after:rounded-xl after:absolute after:duration-300" href="/">Trailers</a>
             {% endif %}
-            {% if is_authenticated %}
+            {% if not is_guest %}
             <a class="nav-btn relative after:content-[''] after:bg-white after:h-[2px] after:w-[0%] after:left-0 after:-bottom-[5px] after:rounded-xl after:absolute after:duration-300" href="#">Shows</a>
             <a class="nav-btn relative after:content-[''] after:bg-white after:h-[2px] after:w-[0%] after:left-0 after:-bottom-[5px] after:rounded-xl after:absolute after:duration-300" href="#">Contributors</a>
             <a class="nav-btn relative after:content-[''] after:bg-white after:h-[2px] after:w-[0%] after:left-0 after:-bottom-[5px] after:rounded-xl after:absolute after:duration-300" href="#">Favorites</a>
