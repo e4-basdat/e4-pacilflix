@@ -4,6 +4,7 @@ from django.http import JsonResponse
 
 
 def login(request):
+    context = {}
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -16,7 +17,5 @@ def login(request):
                 "message": "berhasil gan"
             })
         else:
-            return JsonResponse({
-                "message": "Gagal gan"
-            })
-    return render(request, "login.html", {})
+            context["message"] = "Login failed. Make sure you've inputted the correct credentials."
+    return render(request, "login.html", context)
