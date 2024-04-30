@@ -56,6 +56,43 @@ def get_user_active_package(request):
         return JsonResponse({"status": "success", "data": context, "message": message}, status=200)
     else:
         return JsonResponse({"status": "error", "message": "Method not allowed."}, status=405)
+
+def get_package_details_by_name(request, package_name):
+    context = {}
+    
+    if request.method == "GET":
+        package_details = query(
+            """
+            SELECT 
+                p.nama, 
+                p.harga, 
+                p.resolusi_layar, 
+                STRING_AGG(dp.dukungan_perangkat, ', ') AS dukungan_perangkat 
+            FROM 
+                paket AS p 
+            JOIN 
+                dukungan_perangkat AS dp ON p.nama = dp.nama_paket 
+            WHERE 
+                p.nama = %s 
+            GROUP BY 
+                p.nama, 
+                p.harga, 
+                p.resolusi_layar;
+            """,
+            (package_name,)
+        )
+
+        message = ""
+        if len(package_details) == 0:
+            message = f"Package {package_name} not found."
+            context["package"] = {}
+        else:
+            message = f"Package {package_name} found."
+            context["package"] = package_details[0]
+
+        return JsonResponse({"status": "success", "data": context, "message": message}, status=200)
+    else:
+        return JsonResponse({"status": "error", "message": "Method not allowed."}, status=405)
     
 def get_all_packages(request):
     context = {}
@@ -67,7 +104,7 @@ def get_all_packages(request):
                 p.nama, 
                 p.harga, 
                 p.resolusi_layar, 
-                STRING_AGG(dp.dukungan_perangkat, ', ') 
+                STRING_AGG(dp.dukungan_perangkat, ', ') AS dukungan_perangkat 
             FROM 
                 paket AS p 
             JOIN 
@@ -90,7 +127,7 @@ def get_all_packages(request):
         return JsonResponse({"status": "success", "data": context, "message": message}, status=200)
     else:
         return JsonResponse({"status": "error", "message": "Method not allowed."}, status=405)
-    
+
 def get_transaction_history(request):
     context = {}
 
@@ -149,19 +186,36 @@ def add_subscription(request):
         payment_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         data = query(
             """
-            INSERT INTO
-                transaction (
-                    username, 
-                    nama_paket, 
-                    start_date_time,
-                    end_date_time, 
-                    metode_pembayaran, 
-                    timestamp_pembayaran
-                )
-            VALUES 
-                (%s, %s, %s, %s, %s, %s);
+            DO
+            $$
+            BEGIN
+                IF (
+                    SELECT MAX(start_date_time) 
+                    FROM transaction 
+                    WHERE username = %s
+                ) IS NULL OR (
+                    SELECT MAX(start_date_time) 
+                    FROM transaction 
+                    WHERE username = %s
+                ) < NOW() - INTERVAL '1 day'
+                THEN
+                    INSERT INTO transaction (
+                        username, 
+                        nama_paket, 
+                        start_date_time,
+                        end_date_time, 
+                        metode_pembayaran, 
+                        timestamp_pembayaran
+                    )
+                    VALUES 
+                        (%s, %s, %s, %s, %s, %s);
+                END IF;
+            END
+            $$;
             """,
             (
+                request.session["username"],
+                request.session["username"], 
                 request.session["username"], 
                 package_name, 
                 start_date_time, 
@@ -175,7 +229,7 @@ def add_subscription(request):
     else:
         return JsonResponse({"status": "error", "message": "Method not allowed."}, status=405)
     
-def update_active_subscription_status(request):
+def update_subscription(request):
     context = {}
 
     if 'username' not in request.session:
@@ -186,18 +240,28 @@ def update_active_subscription_status(request):
         start_date_time = data["start_date_time"]
         new_end_date = data["new_end_date"]
         username = request.session["username"]
+        metode_pembayaran = data["metode_pembayaran"]
+        nama_paket = data["nama_paket"]
+        timestamp_pembayaran = data["timestamp_pembayaran"]
 
         data = query(
             """
-            UPDATE
-                transaction
-            SET
-                end_date_time = %s
-            WHERE
-                username = %s
-                AND start_date_time = %s;
+            UPDATE transaction
+            SET 
+                end_date_time = %s,
+                nama_paket = %s,
+                metode_pembayaran = %s,
+                timestamp_pembayaran = %s
+            WHERE 
+                username = %s AND 
+                start_date_time = %s
             """,
-            (new_end_date, username, start_date_time)
+            (new_end_date, 
+             nama_paket, 
+             metode_pembayaran,
+             timestamp_pembayaran,
+             username, 
+             start_date_time)
         )
 
         return JsonResponse({"status": "success", "message": "Subscription status updated successfully."}, status=200)
@@ -217,13 +281,44 @@ def render_subscription_manager(request):
 
     return render(request, "manage_subscription.html", context)
 
-def render_purchase_subscription(request):
+def render_subscription_purchase(request, package_name):
     context = {
-        "is_logged_in": False
+        "is_logged_in": False,
     }
 
     if 'username' not in request.session:
         return redirect('authentication:login')
+    
+    context["is_logged_in"] = True
+    context["username"] = request.session["username"]
+
+    if request.method == "GET":
+        package_details = query(
+            """
+            SELECT 
+                p.nama, 
+                p.harga, 
+                p.resolusi_layar, 
+                STRING_AGG(dp.dukungan_perangkat, ', ') AS dukungan_perangkat 
+            FROM 
+                paket AS p 
+            JOIN 
+                dukungan_perangkat AS dp ON p.nama = dp.nama_paket 
+            WHERE 
+                p.nama = %s 
+            GROUP BY 
+                p.nama, 
+                p.harga, 
+                p.resolusi_layar;
+            """,
+            (package_name,)
+        )
+
+        if len(package_details) == 0:
+            return redirect("subscription:render_subscription_manager")
+        else:
+            context["package"] = package_details[0]
     else:
-        context["is_logged_in"] = True
-        context["username"] = request.session["username"]
+        return JsonResponse({"status": "error", "message": "Method not allowed."}, status=405)
+    
+    return render(request, "purchase_subscription.html", context)

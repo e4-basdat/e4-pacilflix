@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mx-auto h-[calc(100vh-80px)] bg-[#242831] font-inter_tight">
+    <div class="mb-12 text-slate-100 text-center">
+        <h1 class="pt-16 pb-4 font-bold text-5xl drop-shadow-md">Purchase <span class="bg-gradient-to-r from-blue-500 to-red-500 text-transparent bg-clip-text">PacilFlix</span> subscription</h1>
+        <p class="text-xl">The escape to the cinemas, on the palm of your hands.</p>
+    </div>
+    <div class="mt-10 mb-5 text-slate-100 text-center">
+        <p class="text-xl">To be purchased subscription package info</p>
+    </div>
+    <div class="mx-auto px-8">
+        <div class="relative overflow-x-auto">
+            <table class="w-full text-sm text-left rtl:text-right text-white">
+                <thead class="text-xs text-[#242831] uppercase bg-white">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            Package type
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Price
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Screen resolution
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Supported device(s)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="subscriptionBody" class="bg-[#242831]">
+                    <tr>
+                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">{{ package.nama }}</th>
+                        <td class="px-6 py-4">{{ package.harga }}</td>
+                        <td class="px-6 py-4">{{ package.resolusi_layar }}</td>
+                        <td class="px-6 py-4">{{ package.dukungan_perangkat }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="mx-auto px-8 pt-8 text-white">
+        <form onsubmit="purchaseSubscription(); return false;">
+            <p class="text-sm font-bold mb-2">Payment method</p>
+            <select onchange="validatePaymentMethodMsg()" id="id_payment_method" name="payment-method" class="w-full rounded-lg border border-gray-500 px-4 py-3 bg-[#333845]">
+                <option value="" disabled selected>Select your payment method...</option>
+                <option value="transfer bank">Bank transfer</option>
+                <option value="kartu kredit">Credit card</option>
+                <option value="e-wallet">E-wallet</option>
+            </select>
+            <p class="absolute text-xs text-red-500 pt-1" id="select-msg"></p>
+            <div class="pt-8">
+                <button id="purchase-btn" type="submit" class="mt-5 w-full rounded-md font-bold text-gray-600 border border-gray-600 px-12 py-4 duration-200" disabled>PURCHASE</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script>
+    const payment_field = document.getElementById('id_payment_method')
+
+    const validatePaymentMethod = () => {
+        return payment_field.value === ""
+    }
+
+    const validatePaymentMethodMsg = () => {
+        const res = validatePaymentMethod()
+        if (res) {
+            payment_field.classList.add("border-red-500", "focus:outline-red-500");
+            document.getElementById('select-msg').innerText = 'Choose one!'
+        } else {
+            payment_field.classList.remove("border-red-500", "focus:outline-red-500");
+            document.getElementById('select-msg').innerText = ''
+        }
+        validateFields()
+    }
+
+    function validateFields() {
+        const btn = document.getElementById("purchase-btn");
+        if (
+            !(
+            validatePaymentMethod()
+            )
+        ) {
+            btn.disabled = false;
+            btn.classList.add("text-white", "border-white", "hover:bg-white","hover:text-[#242831]")
+        } else {
+            btn.classList.remove("text-white", "border-white", "hover:bg-white","hover:text-[#242831]")
+            btn.disabled = true;
+        }
+    }
+
+    async function getCurrentActiveSubscription() {
+        return fetch("{% url 'subscription:get_user_active_package' %}").then((res) => res.json())
+    }
+
+    async function purchaseSubscription(event) {
+        event.preventDefault();
+
+        const payment_method = document.getElementById('id_payment method').value
+        const data = await getCurrentActiveSubscription()
+        
+        if (data.status === "success") {
+            const active_subscription = data.data.transaction
+
+            if (Object.keys(active_subscription).length === 0){
+                fetch("{% url 'subscription:add_subscription' %}", {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        package_name: "{{ package.nama }}",
+                        payment_method: payment_method
+                    }),
+                }).then(() => {
+                    window.location.href = "{% url 'subscription:subscription' %}"
+                })
+            } else {
+                fetch("{% url 'subscription:add_subscription' %}", {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        package_name: "{{ package.nama }}",
+                        payment_method: payment_method
+                    }),
+                }).then(() => {
+                    window.location.href = "{% url 'subscription:subscription' %}"
+                })
+
+                const new_subscription = await getCurrentActiveSubscription()
+            }
+        } else {
+            alert("Failed to get active package")
+        }
+    }
+</script>
+{% endblock script %}
