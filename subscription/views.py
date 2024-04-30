@@ -139,7 +139,7 @@ def get_transaction_history(request):
     if request.method == "GET":
         all_transaction = query(
             """
-            SELECT 
+        SELECT DISTINCT
                 t.nama_paket, 
                 t.start_date_time, 
                 t.end_date_time, 
@@ -153,7 +153,9 @@ def get_transaction_history(request):
             JOIN 
                 dukungan_perangkat AS dp ON p.nama = dp.nama_paket 
             WHERE 
-                t.username = %s;
+                t.username = %s
+            ORDER BY
+                t.timestamp_pembayaran DESC;
             """, 
             (active_username,)
         )

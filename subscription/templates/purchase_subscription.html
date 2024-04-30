@@ -122,11 +122,21 @@
                         package_name: "{{ package.nama }}",
                         payment_method: payment_method
                     }),
-                }).then(() => {
-                    window.location.href = "{% url 'subscription:subscription' %}"
                 })
 
                 const new_subscription = await getCurrentActiveSubscription()
+                const new_active_subscription = new_subscription.data.transaction
+
+                fetch("{% url 'subscription:update_subscription'%}", {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        nama_paket: active_subscription.nama_paket,
+                        start_date_time: active_subscription.start_date_time,
+                        end_date_time: new_active_subscription.end_date_time
+                    })
+                }).then(() => {
+                    window.location.href = "{% url 'subscription:subscription' %}"
+                })
             }
         } else {
             alert("Failed to get active package")
