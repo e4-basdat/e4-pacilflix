@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="mx-auto h-[calc(100vh-80px)] bg-[#242831] font-inter_tight">
+<div class="mx-auto min-h-screen bg-[#242831] font-inter_tight pb-6">
     <div class="mb-12 text-slate-100 text-center">
         <h1 class="pt-16 pb-4 font-bold text-5xl drop-shadow-md">Purchase <span class="bg-gradient-to-r from-blue-500 to-red-500 text-transparent bg-clip-text">PacilFlix</span> subscription</h1>
         <p class="text-xl">The escape to the cinemas, on the palm of your hands.</p>
@@ -49,10 +49,10 @@
                     <option value="E-wallet">E-wallet</option>
                 </select>
             </div>
-            <p class="absolute text-xs text-red-500 pt-1" id="select-msg"></p>
-            <p class="absolute text-xs text-red-500 pt-4" id="not-eligible-msg"></p>
-            <div class="pt-8 max-w-lg mx-auto">
-                <button id="purchase-btn" type="submit" class="mt-5 w-full rounded-md font-bold text-gray-600 border border-gray-600 px-12 py-4 duration-200" disabled>PURCHASE</button>
+            <p class="text-xs text-red-500 pt-2 text-center" id="select-msg"></p>
+            <p class="text-xs text-red-500 pt-2 text-center" id="not-eligible-msg"></p>
+            <div class="pt-4 max-w-lg mx-auto">
+                <button id="purchase-btn" type="submit" class="mt-5 w-full rounded-md font-bold text-gray-600 border border-gray-600 px-12 py-3 duration-200" disabled>PURCHASE</button>
             </div>
         </form>
     </div>
@@ -172,6 +172,7 @@
         }
     }
 
+    validatePaymentMethodMsg()
     subscriptionEligibility()
 </script>
 {% endblock script %}
