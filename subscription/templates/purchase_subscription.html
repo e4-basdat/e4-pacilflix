@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mx-auto h-[calc(100vh-80px)] bg-[#242831] font-inter_tight">
+    <div class="mb-12 text-slate-100 text-center">
+        <h1 class="pt-16 pb-4 font-bold text-5xl drop-shadow-md">Purchase <span class="bg-gradient-to-r from-blue-500 to-red-500 text-transparent bg-clip-text">PacilFlix</span> subscription</h1>
+        <p class="text-xl">The escape to the cinemas, on the palm of your hands.</p>
+    </div>
+    <div class="mt-10 mb-5 text-slate-100 text-center">
+        <p class="text-xl">To be purchased subscription package info</p>
+    </div>
+    <div class="mx-auto px-8">
+        <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-lg mx-auto table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Package type
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Price
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Screen resolution
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Supported device(s)
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="subscriptionBody" class="bg-[#242831]">
+                <tr>
+                    <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">{{ package.nama }}</th>
+                    <td class="px-6 py-4">{{ package.harga }}</td>
+                    <td class="px-6 py-4">{{ package.resolusi_layar }}</td>
+                    <td class="px-6 py-4">{{ package.dukungan_perangkat }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="mx-auto px-8 pt-8 text-white">
+        <form method="POST" onsubmit="purchaseSubscription(); return false;">
+            {% csrf_token %}
+            <p class="text-sm font-bold mb-2 text-center">Payment method</p>
+            <div class="w-full max-w-lg mx-auto">
+                <select onchange="validatePaymentMethodMsg()" id="id_payment_method" name="payment-method" class="block rounded-lg border border-gray-500 px-4 py-3 bg-[#333845] mx-auto">
+                    <option value="" disabled selected>Select your payment method...</option>
+                    <option value="Transfer Bank">Bank transfer</option>
+                    <option value="Kartu Kredit">Credit card</option>
+                    <option value="E-wallet">E-wallet</option>
+                </select>
+            </div>
+            <p class="absolute text-xs text-red-500 pt-1" id="select-msg"></p>
+            <p class="absolute text-xs text-red-500 pt-4" id="not-eligible-msg"></p>
+            <div class="pt-8 max-w-lg mx-auto">
+                <button id="purchase-btn" type="submit" class="mt-5 w-full rounded-md font-bold text-gray-600 border border-gray-600 px-12 py-4 duration-200" disabled>PURCHASE</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script>
+    const payment_field = document.getElementById('id_payment_method')
+
+    async function fetchSubscriptionEligibility() {
+        return fetch("{% url 'subscription:check_subscription_eligibility' %}").then((res) => res.json())
+    }
+
+    async function subscriptionEligibility() {
+        const data = await fetchSubscriptionEligibility()
+        const btn = document.getElementById("purchase-btn");
+
+        if (data.status === "error") {
+            btn.classList.remove("text-white", "border-white", "hover:bg-white","hover:text-[#242831]")
+            btn.disabled = true;
+            document.getElementById('not-eligible-msg').innerText = data.message
+            document.getElementById('id_payment_method').disabled = true
+        }
+    }
+
+    const validatePaymentMethod = () => {
+        return payment_field.value === ""
+    }
+
+    const validatePaymentMethodMsg = () => {
+        const res = validatePaymentMethod()
+        if (res) {
+            payment_field.classList.add("border-red-500", "focus:outline-red-500");
+            document.getElementById('select-msg').innerText = 'Choose one!'
+        } else {
+            payment_field.classList.remove("border-red-500", "focus:outline-red-500");
+            document.getElementById('select-msg').innerText = ''
+        }
+        validateFields()
+    }
+
+    function validateFields() {
+        const btn = document.getElementById("purchase-btn");
+        if (
+            !(
+            validatePaymentMethod()
+            )
+        ) {
+            btn.disabled = false;
+            btn.classList.add("text-white", "border-white", "hover:bg-white","hover:text-[#242831]")
+        } else {
+            btn.classList.remove("text-white", "border-white", "hover:bg-white","hover:text-[#242831]")
+            btn.disabled = true;
+        }
+    }
+
+    async function getCurrentActiveSubscription() {
+        return fetch("{% url 'subscription:get_user_active_package' %}").then((res) => res.json())
+    }
+
+    async function purchaseSubscription(event) {
+        // event.preventDefault();
+
+        const payment_method = payment_field.value
+        const data = await getCurrentActiveSubscription()
+        
+        if (data.status === "success") {
+            const active_subscription = data.data.transaction
+
+            if (Object.keys(active_subscription).length === 0){
+                fetch("{% url 'subscription:add_subscription' %}", {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        package_name: "{{ package.nama }}",
+                        payment_method: payment_method
+                    }),
+                }).then(() => {
+                    window.location.href = "{% url 'subscription:render_subscription_manager' %}"
+                }).catch((err) => {
+                    alert("Failed to add subscription. Please try again later.");
+                    return;
+                })
+            } else {
+                fetch("{% url 'subscription:add_subscription' %}", {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        package_name: "{{ package.nama }}",
+                        payment_method: payment_method
+                    }),
+                }).catch((err) => {
+                    alert("Failed to add subscription. Please try again later.");
+                    return;
+                })
+
+                const new_subscription = await getCurrentActiveSubscription()
+                const new_active_subscription = new_subscription.data.transaction
+
+                fetch("{% url 'subscription:update_subscription'%}", {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        nama_paket: active_subscription.nama_paket,
+                        start_date_time: active_subscription.start_date_time,
+                        new_end_date: new_active_subscription.start_date_time,
+                        timestamp_pembayaran: active_subscription.timestamp_pembayaran,
+                        metode_pembayaran: active_subscription.metode_pembayaran,
+                    })
+                }).then(() => {
+                    window.location.href = "{% url 'subscription:render_subscription_manager' %}"
+                }).catch((err) => {
+                    alert("Failed to update subscription. Please try again later.");
+                    return;
+                })
+            }
+        } else {
+            alert("Failed to get active package")
+        }
+    }
+
+    subscriptionEligibility()
+</script>
+{% endblock script %}
