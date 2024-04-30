@@ -116,7 +116,9 @@ def get_all_packages(request):
             GROUP BY 
                 p.nama, 
                 p.harga, 
-                p.resolusi_layar;
+                p.resolusi_layar
+            ORDER BY
+                p.harga ASC;
             """
         )
 

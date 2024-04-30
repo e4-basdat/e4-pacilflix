@@ -10,100 +10,94 @@
         <p class="text-xl">Your current active subscription package</p>
     </div>
     <div class="mx-auto px-8">
-        <div class="relative overflow-x-auto">
-            <table class="w-full text-sm text-left rtl:text-right text-white">
-                <thead class="text-xs text-[#242831] uppercase bg-white">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">
-                            Package type
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Price
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Screen resolution
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Supported device(s)
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Start date
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            End date
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="subscriptionBody" class="bg-[#242831]">
-                </tbody>
-            </table>
-        </div>
+        <table class="text-sm text-left rtl:text-right text-white max-w-screen-lg mx-auto table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Package type
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Price
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Screen resolution
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Supported device(s)
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Start date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        End date
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="subscriptionBody" class="bg-[#242831]">
+            </tbody>
+        </table>
     </div>
     <div class="mt-10 mb-5 text-slate-100 text-center">
         <p class="text-xl">Choose other subscription packages</p>
     </div>
     <div class="mx-auto px-8">
-        <div class="relative overflow-x-auto">
-            {% comment %} Jika tidak eligible masukkan paragraph merah mengapa tidak eligible {% endcomment %}
-            <p class="text-red-500 text-center pb-4" id="not-eligible-msg">
-            </p>
-            <table class="w-full text-sm text-left rtl:text-right text-white">
-                <thead class="text-xs text-[#242831] uppercase bg-white">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">
-                            Package type
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Price
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Screen resolution
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Supported device(s)
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Purchase
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="allSubscriptionPackagesBody" class="bg-[#242831]">
-                </tbody>
-            </table>
-        </div>
+        {% comment %} Jika tidak eligible masukkan paragraph merah mengapa tidak eligible {% endcomment %}
+        <p class="text-red-500 text-center pb-4" id="not-eligible-msg">
+        </p>
+        <table class="text-sm text-left rtl:text-right text-white max-w-screen-lg mx-auto table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Package type
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Price
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Screen resolution
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Supported device(s)
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Purchase
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="allSubscriptionPackagesBody" class="bg-[#242831]">
+            </tbody>
+        </table>
     </div>
     <div class="mt-10 mb-5 text-slate-100 text-center">
         <p class="text-xl">Your subscription transaction history</p>
     </div>
     <div class="mx-auto px-8 pb-8">
-        <div class="relative overflow-x-auto">
-            <table class="w-full text-sm text-left rtl:text-right text-white">
-                <thead class="text-xs text-[#242831] uppercase bg-white">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">
-                            Package type
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Start date
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            End date
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Payment method
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Payment date
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Total expense
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="allTransactionHistoryBody" class="bg-[#242831]">
-                </tbody>
-            </table>
-        </div>
+        <table class="w-full text-sm text-left rtl:text-right text-white mx-auto max-w-screen-lg table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Package type
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Start date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        End date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Payment method
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Payment date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Total expense
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="allTransactionHistoryBody" class="bg-[#242831]">
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock content %}

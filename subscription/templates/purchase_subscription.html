@@ -10,48 +10,48 @@
         <p class="text-xl">To be purchased subscription package info</p>
     </div>
     <div class="mx-auto px-8">
-        <div class="relative overflow-x-auto">
-            <table class="w-full text-sm text-left rtl:text-right text-white">
-                <thead class="text-xs text-[#242831] uppercase bg-white">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">
-                            Package type
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Price
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Screen resolution
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Supported device(s)
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="subscriptionBody" class="bg-[#242831]">
-                    <tr>
-                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">{{ package.nama }}</th>
-                        <td class="px-6 py-4">{{ package.harga }}</td>
-                        <td class="px-6 py-4">{{ package.resolusi_layar }}</td>
-                        <td class="px-6 py-4">{{ package.dukungan_perangkat }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-lg mx-auto table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Package type
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Price
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Screen resolution
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Supported device(s)
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="subscriptionBody" class="bg-[#242831]">
+                <tr>
+                    <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">{{ package.nama }}</th>
+                    <td class="px-6 py-4">{{ package.harga }}</td>
+                    <td class="px-6 py-4">{{ package.resolusi_layar }}</td>
+                    <td class="px-6 py-4">{{ package.dukungan_perangkat }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <div class="mx-auto px-8 pt-8 text-white">
-        <form onsubmit="purchaseSubscription(); return false;">
+        <form method="POST" onsubmit="purchaseSubscription(); return false;">
             {% csrf_token %}
-            <p class="text-sm font-bold mb-2">Payment method</p>
-            <select onchange="validatePaymentMethodMsg()" id="id_payment_method" name="payment-method" class="w-full rounded-lg border border-gray-500 px-4 py-3 bg-[#333845]">
-                <option value="" disabled selected>Select your payment method...</option>
-                <option value="Transfer Bank">Bank transfer</option>
-                <option value="Kartu Kredit">Credit card</option>
-                <option value="E-wallet">E-wallet</option>
-            </select>
+            <p class="text-sm font-bold mb-2 text-center">Payment method</p>
+            <div class="w-full max-w-lg mx-auto">
+                <select onchange="validatePaymentMethodMsg()" id="id_payment_method" name="payment-method" class="block rounded-lg border border-gray-500 px-4 py-3 bg-[#333845] mx-auto">
+                    <option value="" disabled selected>Select your payment method...</option>
+                    <option value="Transfer Bank">Bank transfer</option>
+                    <option value="Kartu Kredit">Credit card</option>
+                    <option value="E-wallet">E-wallet</option>
+                </select>
+            </div>
             <p class="absolute text-xs text-red-500 pt-1" id="select-msg"></p>
             <p class="absolute text-xs text-red-500 pt-4" id="not-eligible-msg"></p>
-            <div class="pt-8">
+            <div class="pt-8 max-w-lg mx-auto">
                 <button id="purchase-btn" type="submit" class="mt-5 w-full rounded-md font-bold text-gray-600 border border-gray-600 px-12 py-4 duration-200" disabled>PURCHASE</button>
             </div>
         </form>
