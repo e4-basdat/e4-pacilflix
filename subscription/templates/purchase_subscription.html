@@ -41,14 +41,16 @@
     </div>
     <div class="mx-auto px-8 pt-8 text-white">
         <form onsubmit="purchaseSubscription(); return false;">
+            {% csrf_token %}
             <p class="text-sm font-bold mb-2">Payment method</p>
             <select onchange="validatePaymentMethodMsg()" id="id_payment_method" name="payment-method" class="w-full rounded-lg border border-gray-500 px-4 py-3 bg-[#333845]">
                 <option value="" disabled selected>Select your payment method...</option>
-                <option value="transfer bank">Bank transfer</option>
-                <option value="kartu kredit">Credit card</option>
-                <option value="e-wallet">E-wallet</option>
+                <option value="Transfer Bank">Bank transfer</option>
+                <option value="Kartu Kredit">Credit card</option>
+                <option value="E-wallet">E-wallet</option>
             </select>
             <p class="absolute text-xs text-red-500 pt-1" id="select-msg"></p>
+            <p class="absolute text-xs text-red-500 pt-4" id="not-eligible-msg"></p>
             <div class="pt-8">
                 <button id="purchase-btn" type="submit" class="mt-5 w-full rounded-md font-bold text-gray-600 border border-gray-600 px-12 py-4 duration-200" disabled>PURCHASE</button>
             </div>
@@ -60,6 +62,22 @@
 {% block script %}
 <script>
     const payment_field = document.getElementById('id_payment_method')
+
+    async function fetchSubscriptionEligibility() {
+        return fetch("{% url 'subscription:check_subscription_eligibility' %}").then((res) => res.json())
+    }
+
+    async function subscriptionEligibility() {
+        const data = await fetchSubscriptionEligibility()
+        const btn = document.getElementById("purchase-btn");
+
+        if (data.status === "error") {
+            btn.classList.remove("text-white", "border-white", "hover:bg-white","hover:text-[#242831]")
+            btn.disabled = true;
+            document.getElementById('not-eligible-msg').innerText = data.message
+            document.getElementById('id_payment_method').disabled = true
+        }
+    }
 
     const validatePaymentMethod = () => {
         return payment_field.value === ""
@@ -97,9 +115,9 @@
     }
 
     async function purchaseSubscription(event) {
-        event.preventDefault();
+        // event.preventDefault();
 
-        const payment_method = document.getElementById('id_payment method').value
+        const payment_method = payment_field.value
         const data = await getCurrentActiveSubscription()
         
         if (data.status === "success") {
@@ -113,7 +131,10 @@
                         payment_method: payment_method
                     }),
                 }).then(() => {
-                    window.location.href = "{% url 'subscription:subscription' %}"
+                    window.location.href = "{% url 'subscription:render_subscription_manager' %}"
+                }).catch((err) => {
+                    alert("Failed to add subscription. Please try again later.");
+                    return;
                 })
             } else {
                 fetch("{% url 'subscription:add_subscription' %}", {
@@ -122,6 +143,9 @@
                         package_name: "{{ package.nama }}",
                         payment_method: payment_method
                     }),
+                }).catch((err) => {
+                    alert("Failed to add subscription. Please try again later.");
+                    return;
                 })
 
                 const new_subscription = await getCurrentActiveSubscription()
@@ -132,15 +156,22 @@
                     body: JSON.stringify({
                         nama_paket: active_subscription.nama_paket,
                         start_date_time: active_subscription.start_date_time,
-                        end_date_time: new_active_subscription.end_date_time
+                        new_end_date: new_active_subscription.start_date_time,
+                        timestamp_pembayaran: active_subscription.timestamp_pembayaran,
+                        metode_pembayaran: active_subscription.metode_pembayaran,
                     })
                 }).then(() => {
-                    window.location.href = "{% url 'subscription:subscription' %}"
+                    window.location.href = "{% url 'subscription:render_subscription_manager' %}"
+                }).catch((err) => {
+                    alert("Failed to update subscription. Please try again later.");
+                    return;
                 })
             }
         } else {
             alert("Failed to get active package")
         }
     }
+
+    subscriptionEligibility()
 </script>
 {% endblock script %}

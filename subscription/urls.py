@@ -11,5 +11,6 @@ urlpatterns = [
     path("subscription-packages/<str:package_name>/", get_package_details_by_name, name="get_package_details_by_name"),
     path("subscribe/<str:package_name>/", render_subscription_purchase, name="render_subscription_purchase"),
     path("purchase-subscription/", add_subscription, name="add_subscription"),
-    path("uodate-subscription/", update_subscription, name="update_subscription"),
+    path("update-subscription/", update_subscription, name="update_subscription"),
+    path("subscription-eligibility/", check_subscription_eligibility, name="check_subscription_eligibility"),
 ]
