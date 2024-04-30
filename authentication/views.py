@@ -7,7 +7,7 @@ import random as r
 def register(request):
     if "username" in request.session:
         # TODO: Ganti redirect jadi ke "Shows" (daftar tayangan)
-        return redirect("main:show_main")
+        return redirect("shows:tayangan")
     context = {}
     if request.method == "POST":
         username = request.POST.get("username")
@@ -34,7 +34,7 @@ def login(request):
     context = {}
     if "username" in request.session:
         # TODO: Ganti redirect jadi ke "Shows" (daftar tayangan)
-        return redirect("main:show_main")
+        return redirect("shows:tayangan")
     if "message" in request.session:
         context["message"] = request.session["message"]
         del request.session["message"]
@@ -46,7 +46,7 @@ def login(request):
         if len(data) == 1:
             request.session["username"] = username
             # TODO: Ganti redirect jadi ke "Shows" (daftar tayangan)
-            return redirect("main:show_main")
+            return redirect("shows:tayangan")
         else:
             context["message"] = "Login failed. Make sure you've inputted the correct credentials."
     return render(request, "login.html", context)
