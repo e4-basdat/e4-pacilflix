@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mx-auto min-h-screen bg-[#242831] font-inter_tight pb-6">
+    <div class="mb-12 text-slate-100 text-center">
+        <h1 class="pt-16 pb-4 font-bold text-5xl drop-shadow-md">Honored contributors of cinema in <span class="bg-gradient-to-r from-blue-500 to-red-500 text-transparent bg-clip-text">PacilFlix</span></h1>
+        <p class="text-xl">The escape to the cinemas, on the palm of your hands.</p>
+    </div>
+    <div class="mt-10 mb-2 text-slate-100 text-center">
+        <p class="text-xl">The contributors</p>
+    </div>
+    <div class="mx-auto px-8 pt-4 pb-8 text-white">
+        <form method="GET" onsubmit="getContributors(); return false;">
+            {% csrf_token %}
+            <div class="w-full max-w-lg mx-auto">
+                <select onchange="validateRoleSelectMethodMsg()" id="id_role_selection" name="role-selection" class="block rounded-lg border border-gray-500 px-4 py-3 bg-[#333845] mx-auto">
+                    <option value="Film Director" selected>Film Director</option>
+                    <option value="Actor">Actor</option>
+                    <option value="Screenwriter">Screenwriter</option>
+                </select>
+            </div>
+            <div class="pt-1 max-w-lg mx-auto">
+                <button id="contributor-btn" type="submit" class="mt-5 w-full rounded-md font-bold text-gray-600 border border-gray-600 px-12 py-3 duration-200" disabled>SEARCH</button>
+            </div>
+        </form>
+    </div>
+    <div class="mx-auto px-8">
+        <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-lg mx-auto table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Name
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Role
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Gender
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Nationality
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="contributorBody" class="bg-[#242831]">
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script>
+    const roleSelection = document.getElementById('id_role_selection');
+
+    async function fetchDirector() {
+        return fetch("{% url 'contributors:get_directors' %}").then((res) => res.json())
+    }
+
+    async function fetchActor() {
+        return fetch("{% url 'contributors:get_actors' %}").then((res) => res.json())
+    }
+
+    async function fetchScreenwriter() {
+        return fetch("{% url 'contributors:get_writers' %}").then((res) => res.json())
+    }
+
+    async function getContributors() {
+        const role = roleSelection.value;
+        let response;
+        if (role === 'Film Director') {
+            response = await fetchDirector();
+        } else if (role === 'Actor') {
+            response = await fetchActor();
+        } else if (role === 'Screenwriter') {
+            response = await fetchScreenwriter();
+        }
+        const contributors = response.data.contributors;
+        const contributorBody = document.getElementById('contributorBody');
+        contributorBody.innerHTML = '';
+        contributors.forEach(contributor => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">${contributor.nama}</th>
+                <td class="px-6 py-4">${contributor.role}</td>
+                <td class="px-6 py-4">${contributor.jenis_kelamin}</td>
+                <td class="px-6 py-4">${contributor.kewarganegaraan}</td>
+            `;
+            contributorBody.appendChild(tr);
+        });
+    }
+
+    function validateRoleSelectMethodMsg() {
+        const selectMsg = document.getElementById('select-msg');
+        const btn = document.getElementById("contributor-btn");
+        console.log(roleSelection.value);
+        if (!(roleSelection.value === '')) {
+            btn.classList.add("text-white", "border-white", "hover:bg-white", "hover:text-[#242831]")
+            btn.disabled = false;
+        } else {
+            btn.classList.remove("text-white", "border-white", "hover:bg-white", "hover:text-[#242831]")
+            btn.disabled = true;
+        }
+    }
+
+    validateRoleSelectMethodMsg();
+    getContributors();
+</script>
+{% endblock script %}
