@@ -86,10 +86,8 @@
         const res = validatePaymentMethod()
         if (res) {
             payment_field.classList.add("border-red-500", "focus:outline-red-500");
-            document.getElementById('select-msg').innerText = 'Choose one!'
         } else {
             payment_field.classList.remove("border-red-500", "focus:outline-red-500");
-            document.getElementById('select-msg').innerText = ''
         }
         validateFields()
     }
