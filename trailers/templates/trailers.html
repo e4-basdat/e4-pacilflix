@@ -107,7 +107,7 @@
 
     {% comment %} Series {% endcomment %}
     <div class="mt-10 mb-2 text-slate-100 text-center">
-        <p class="text-xl">Films</p>
+        <p class="text-xl">Series</p>
     </div>
     <div class="mx-auto px-8">
         <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-xl mx-auto table-auto">
@@ -162,7 +162,7 @@
         <div class="mx-auto px-8">
             <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-lg mx-auto table-auto">
                 <thead class="text-xs text-[#242831] uppercase bg-white">
-                    <tr>
+                    <tr class="text-center">
                         <th scope="col" class="px-6 py-3">
                             Title
                         </th>
@@ -181,8 +181,8 @@
                     ${data.map((item, index) => 
                         `
                         <tr>
-                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">${item.judul}</th>
-                        <td class="px-6 py-4">${item.sinopsis_trailer}</td>
+                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">${item.judul}</th>
+                        <td class="px-6 py-4 max-w-sm">${item.sinopsis_trailer}</td>
                         <td class="px-6 py-4">${item.url_video_trailer}</td>
                         <td class="px-6 py-4">${item.release_date_trailer}</td>
                         </tr>
