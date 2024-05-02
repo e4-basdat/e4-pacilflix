@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mx-auto min-h-screen bg-[#242831] font-inter_tight pb-6">
+<div class="container mx-auto px-4 py-4">
+    <div class="mb-12 text-slate-100 text-center">
+        <h1 class="pt-16 pb-4 font-bold text-5xl drop-shadow-md">Check out shows available in <span class="bg-gradient-to-r from-blue-500 to-red-500 text-transparent bg-clip-text">PacilFlix</span></h1>
+        <p class="text-xl">The escape to the cinemas, on the palm of your hands.</p>
+    </div>
+
+    {% comment %}Input search  {% endcomment %}
+    <form class="max-w-md mx-auto">   
+        <label for="default-search" class="mb-2 text-sm font-medium text-white sr-only">Search</label>
+        <div class="relative">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                </svg>
+            </div>
+            <input type="search" id="searchInput" class="text-white block rounded-lg border border-gray-500 px-10 py-3 bg-[#333845] w-full" placeholder="Search Film, Series..." required />
+        </div>
+    </form>
+
+    {% comment %} Hasil Pencarian {% endcomment %}
+    <div id="searchResults">
+        <!-- Rendered with JavaScript -->
+    </div>
+
+    {% comment %} 10 Tayangan terbaik minggu ini {% endcomment %}
+    <div class="mt-10 mb-2 text-slate-100 text-center">
+        <p class="text-xl">Top 10 best shows this week</p>
+        <div class="mb-4 text-slate-100 text-center">
+            <label class="text-sm">
+                Global
+                <input type="radio" name="type" value="global" checked >
+            </label>
+            <label class="text-sm">
+                Lokal
+                <input type="radio" name="type" value="lokal">
+            </label>
+        </div>
+    </div>
+    <div class="mx-auto px-8">
+        <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-xl mx-auto table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr class="text-center">
+                    <th scope="col" class="px-6 py-3">
+                        Rank
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Title
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Synopsis
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer URL
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Release Date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Total Views Last Week
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Show
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-[#242831]">
+                {% for item in trailers %}
+                    <tr>
+                        <td class="px-6 py-4">{{forloop.counter}}</td>
+                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
+                        <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
+                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4">{{item.release_date_trailer}}</td>
+                        <td class="px-6 py-4">{{item.total_view_7_days}}</td>
+                        <td class="px-6 py-4">
+                        {% for pengguna_row in pengguna %}
+                            {% if pengguna_row.username == username  %}
+                                <a href="{% url 'shows:detail' judul=item.judul %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                    Show
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% comment %} Film {% endcomment %}
+    <div class="mt-10 mb-2 text-slate-100 text-center">
+        <p class="text-xl">Films</p>
+    </div>
+    <div class="mx-auto px-8">
+        <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-xl mx-auto table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr class="text-center">
+                    <th scope="col" class="px-6 py-3">
+                        Title
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Synopsis
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer URL
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Release Date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Show
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-[#242831]">
+                {% for item in film %}
+                    <tr>
+                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
+                        <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
+                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4">{{item.release_date_trailer}}</td>
+                        <td class="px-6 py-4">
+                        {% for pengguna_row in pengguna %}
+                            {% if pengguna_row.username == username  %}
+                                <a href="{% url 'shows:detail' judul=item.judul %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                    Show
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% comment %} Series {% endcomment %}
+    <div class="mt-10 mb-2 text-slate-100 text-center">
+        <p class="text-xl">Series</p>
+    </div>
+    <div class="mx-auto px-8">
+        <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-xl mx-auto table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr class="text-center">
+                    <th scope="col" class="px-6 py-3">
+                        Title
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Synopsis
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer URL
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Release Date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Show
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-[#242831]">
+                {% for item in series %}
+                    <tr>
+                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
+                        <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
+                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4">{{item.release_date_trailer}}</td>
+                        <td class="px-6 py-4">
+                        {% for pengguna_row in pengguna %}
+                            {% if pengguna_row.username == username  %}
+                                <a href="{% url 'shows:detail' judul=item.judul %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                    Show
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</div>
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const resultsContainer = document.getElementById('searchResults');
+
+    const tayangan = {{ tayangan|safe }};
+    const pengguna = {{ pengguna|safe }};
+    const parsedTayangan = tayangan.map(item => {
+    return {
+        ...item
+    };
+    });
+
+    const renderTable = (data, container, title) => {
+    const tableHTML = `
+    <div class="mt-10 mb-2 text-slate-100 text-center">
+            <p class="text-xl">${title}</p>
+        </div>
+        <div class="mx-auto px-8">
+            <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-xl mx-auto table-auto">
+                <thead class="text-xs text-[#242831] uppercase bg-white">
+                    <tr class="text-center">
+                        <th scope="col" class="px-6 py-3">
+                            Title
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Trailer Synopsis
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Trailer URL
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Trailer Release Date
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Show
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-[#242831]">
+                    ${data.map((item, index) => 
+                        `
+                        <tr>
+                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">${item.judul}</th>
+                        <td class="px-6 py-4 max-w-sm">${item.sinopsis_trailer}</td>
+                        <td class="px-6 py-4">${item.url_video_trailer}</td>
+                        <td class="px-6 py-4">${item.release_date_trailer}</td>
+                        <td class="text-center">
+                            ${isUserHasAccess(item.judul) ? `
+                                <a href="/shows/${item.judul}" class="mt-5 w-full rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                    Show
+                                </a>
+                            ` : ''}
+                        </td>
+                        </tr>
+                        `
+                    ).join('')}
+                </tbody>
+            </table>
+        </div> 
+    `;
+    container.innerHTML = tableHTML;
+    }
+    const isUserHasAccess = (judul) => {
+        // Ambil nilai username dari sesi pengguna
+        const username = '{{ request.session.username }}'; // Sesuaikan dengan cara Anda mengakses sesi pengguna dalam template Django
+
+        // Lakukan logika untuk menentukan apakah pengguna memiliki akses
+        return pengguna.some(pengguna_row => pengguna_row.username === username);
+    };
+    const filterData = (dataSource, searchTerm) => {
+    return dataSource.filter(item => item.judul.toLowerCase().includes(searchTerm.toLowerCase()));
+    }
+
+    searchInput.addEventListener('input', () => {
+        const searchTerm = searchInput.value;
+        if (searchTerm.trim() === '') {
+            // Jika input kosong, sembunyikan hasil pencarian
+            resultsContainer.innerHTML = ''; // Kosongkan hasil pencarian
+            resultsContainer.style.display = 'none'; // Sembunyikan elemen #searchResults
+        } else {
+            // Jika ada input, lakukan pencarian
+            const filteredTayangan = filterData(parsedTayangan, searchTerm);
+            if (filteredTayangan.length === 0) {
+                // Jika tidak ada hasil yang ditemukan, tampilkan pesan
+                const noResultsMessage = document.createElement('p');
+                noResultsMessage.textContent = 'Tidak ada hasil yang ditemukan.';
+                noResultsMessage.classList.add('text-gray-600','font-semibold', 'text-center', 'mt-10'); // Tambahkan kelas gaya langsung di sini
+                resultsContainer.innerHTML = ''; // Kosongkan hasil pencarian
+                resultsContainer.appendChild(noResultsMessage);
+                resultsContainer.style.display = 'block'; // Tampilkan elemen #searchResults
+            } else {
+                // Jika ada hasil, tampilkan hasil pencarian
+                renderTable(filteredTayangan, resultsContainer, 'Search results');
+                resultsContainer.style.display = 'block'; // Tampilkan elemen #searchResults
+            }
+        }
+    });
+
+
+</script>
+{% endblock content %}
