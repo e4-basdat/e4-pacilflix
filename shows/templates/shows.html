@@ -87,9 +87,9 @@
                                         <td class="text-center">
                                             {% for pengguna_row in pengguna %}
                                                 {% if pengguna_row.username == username  %}
-                                                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                                    <a href="{% url 'shows:detail' judul=trailer.judul %}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                                                         Tayangan
-                                                    </button>
+                                                    </a>
                                                 {% endif %}
                                             {% endfor %}
                                         </td>
@@ -157,9 +157,9 @@
                                         <td class="text-center">
                                             {% for pengguna_row in pengguna %}
                                                 {% if pengguna_row.username == username  %}
-                                                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                                    <a href="{% url 'shows:detail' judul=film.judul %}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                                                         Tayangan
-                                                    </button>
+                                                    </a>
                                                 {% endif %}
                                             {% endfor %}
                                         </td>
@@ -229,9 +229,9 @@
                                         <td class="text-center">
                                             {% for pengguna_row in pengguna %}
                                                 {% if pengguna_row.username == username  %}
-                                                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                                    <a href="{% url 'shows:detail' judul=series.judul %}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                                                         Tayangan
-                                                    </button>
+                                                    </a>
                                                 {% endif %}
                                             {% endfor %}
                                         </td>
@@ -254,7 +254,7 @@
     const resultsContainer = document.getElementById('searchResults');
 
     const tayangan = {{ tayangan|safe }};
-
+    const pengguna = {{ pengguna|safe }};
     const parsedTayangan = tayangan.map(item => {
     return {
         ...item
@@ -283,6 +283,7 @@
                         <th class="pb-3 text-center">Sinopsis Trailer</th>
                         <th class="pb-3 text-center">Url Trailer</th>
                         <th class="pb-3 text-center">Release Date Trailer</th>
+                        <th class="pb-3 text-center">Tayangan</th>
 
                     </tr>
                     </thead>
@@ -293,6 +294,14 @@
                         <td class="text-center"><span class="text-center align-baseline inline-flex px-4 py-3 mr-auto items-center font-semibold text-[.95rem] leading-none text-primary bg-primary-light rounded-lg">${item.sinopsis_trailer}</span></td>
                         <td class="text-center"><span class="font-semibold text-light-inverse text-md/normal">${item.url_video_trailer}</span></td>
                         <td class="text-center"><span class="font-semibold text-light-inverse text-md/normal">${item.release_date_trailer}</span></td>
+                        <td class="text-center">
+                            ${isUserHasAccess(item.judul) ? `
+                                <a href="/shows/${item.judul}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                    Tayangan
+                                </a>
+                            ` : ''}
+                        </td>
+
                         </tr>
                     `).join('')}
                     </tbody>
@@ -305,7 +314,13 @@
     `;
     container.innerHTML = tableHTML;
     }
+    const isUserHasAccess = (judul) => {
+        // Ambil nilai username dari sesi pengguna
+        const username = '{{ request.session.username }}'; // Sesuaikan dengan cara Anda mengakses sesi pengguna dalam template Django
 
+        // Lakukan logika untuk menentukan apakah pengguna memiliki akses
+        return pengguna.some(pengguna_row => pengguna_row.username === username);
+    };
     const filterData = (dataSource, searchTerm) => {
     return dataSource.filter(item => item.judul.toLowerCase().includes(searchTerm.toLowerCase()));
     }
