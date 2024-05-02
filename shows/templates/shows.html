@@ -1,253 +1,181 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="mx-auto min-h-screen bg-[#242831] font-inter_tight pb-6">
 <div class="container mx-auto px-4 py-4">
-    <h1 class="text-3xl font-bold text-gray-800 mb-4 text-center">DAFTAR TAYANGAN</h1>
+    <div class="mb-12 text-slate-100 text-center">
+        <h1 class="pt-16 pb-4 font-bold text-5xl drop-shadow-md">Check out shows available in <span class="bg-gradient-to-r from-blue-500 to-red-500 text-transparent bg-clip-text">PacilFlix</span></h1>
+        <p class="text-xl">The escape to the cinemas, on the palm of your hands.</p>
+    </div>
 
     {% comment %}Input search  {% endcomment %}
     <form class="max-w-md mx-auto">   
-        <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+        <label for="default-search" class="mb-2 text-sm font-medium text-white sr-only">Search</label>
         <div class="relative">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                 </svg>
             </div>
-            <input type="search" id="searchInput" class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Film, Series..." required />
+            <input type="search" id="searchInput" class="text-white block rounded-lg border border-gray-500 px-10 py-3 bg-[#333845] w-full" placeholder="Search Film, Series..." required />
         </div>
     </form>
 
     {% comment %} Hasil Pencarian {% endcomment %}
-    <div id="searchResults" class="flex flex-wrap -mx-3 mb-5 display-none">
+    <div id="searchResults">
         <!-- Rendered with JavaScript -->
     </div>
 
     {% comment %} 10 Tayangan terbaik minggu ini {% endcomment %}
-    <div id="topTenTrailers" class="flex flex-wrap -mx-3 mb-5">
-        <div class="w-full max-w-full px-3 mb-6  mx-auto">
-            <div class="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
-                <div class="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
-                    <!-- card header -->
-                    <div class="px-9 pt-5 flex justify-between items-stretch flex-wrap min-h-[70px] pb-0 bg-transparent ">
-                        <h3 class="flex flex-col items-start justify-center m-2 ml-0 font-medium text-xl/tight text-dark">
-                            <span class="mr-3 font-semibold text-dark">10 Tayangan Terbaik Minggu ini</span>
-                        </h3>
-                    </div>
-                    <!-- end card header -->
-                    <!-- card body  -->
-                    <div class="flex-auto block py-8 pt-6 px-9">
-                        <div class="overflow-x-auto">
-                            <table class="w-full my-0 align-middle text-dark border-neutral-200">
-                                <thead class="align-bottom">
-                                    <tr class="font-semibold text-[0.95rem] text-secondary-dark">
-                                        <th class="pb-3 text-center">Rank</th>
-                                        <th class="pb-3 text-center">Title</th>
-                                        <th class="pb-3 text-center">Sinopsis Trailer</th>
-                                        <th class="pb-3 text-center">Url Trailer</th>
-                                        <th class="pb-3 text-center">Release Date Trailer</th>
-                                        <th class="pb-3 text-center">Total Views Last Week</th>
-                                        <th class="pb-3 text-center">Tayangan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for trailer in trailers %}
-                                    <tr class="border-b border-dashed last:border-b-0">
-
-                                        {% comment %} Rank {% endcomment %}
-                                        <td class="text-center">
-                                            <span class="font-semibold text-center">{{ forloop.counter }}</span>
-                                        </td>
-
-                                        {% comment %} Title {% endcomment %}
-                                        <td class="text-center">
-                                            <span class="font-semibold text-light-inverse text-md/normal">{{ trailer.judul}}</span>
-                                        </td>
-
-                                        {% comment %} Sinopsis Trailer {% endcomment %}
-                                        <td class="text-center">
-                                            <span class="text-center align-baseline inline-flex px-4 py-3 mr-auto items-center font-semibold text-[.95rem] leading-none text-primary bg-primary-light rounded-lg">{{ trailer.sinopsis_trailer }}</span>
-                                        </td>
-
-                                        {% comment %} Url Trailer {% endcomment %}
-                                        <td class="text-center">
-                                            <span class="font-semibold text-light-inverse text-md/normal">{{ trailer.url_video_trailer }}</span>
-                                        </td>
-
-                                        {% comment %} Tanggal rilis Trailer {% endcomment %}
-                                        <td class="text-center">
-                                           <span class="font-semibold text-light-inverse text-md/normal">{{ trailer.release_date_trailer }}</span>
-                                        </td>
-
-                                        {% comment %} Total view 7 hari terakhir {% endcomment %}
-                                        <td class="text-center">
-                                            <span class="font-semibold text-light-inverse text-md/normal">{{ trailer.total_view_7_days }}</span>
-                                        </td>
-
-                                        {% comment %} Tayangan {% endcomment %}
-                                        <td class="text-center">
-                                            {% for pengguna_row in pengguna %}
-                                                {% if pengguna_row.username == username  %}
-                                                    <a href="{% url 'shows:detail' judul=trailer.judul %}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                                        Tayangan
-                                                    </a>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="mt-10 mb-2 text-slate-100 text-center">
+        <p class="text-xl">Top 10 best shows this week</p>
+    </div>
+    <div class="mx-auto px-8">
+        <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-xl mx-auto table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr class="text-center">
+                    <th scope="col" class="px-6 py-3">
+                        Rank
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Title
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Synopsis
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer URL
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Release Date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Total Views Last Week
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Show
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-[#242831]">
+                {% for item in trailers %}
+                    <tr>
+                        <td class="px-6 py-4">{{forloop.counter}}</td>
+                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
+                        <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
+                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4">{{item.release_date_trailer}}</td>
+                        <td class="px-6 py-4">{{item.total_view_7_days}}</td>
+                        <td class="px-6 py-4">
+                        {% for pengguna_row in pengguna %}
+                            {% if pengguna_row.username == username  %}
+                                <a href="{% url 'shows:detail' judul=item.judul %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                    Show
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     {% comment %} Film {% endcomment %}
-    <div id="films" class="flex flex-wrap -mx-3 mb-5">
-        <div class="w-full max-w-full px-3 mb-6  mx-auto">
-            <div class="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
-                <div class="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
-                    <!-- card header -->
-                    <div class="px-9 pt-5 flex justify-between items-stretch flex-wrap min-h-[70px] pb-0 bg-transparent ">
-                        <h3 class="flex flex-col items-start justify-center m-2 ml-0 font-medium text-xl/tight text-dark">
-                            <span class="mr-3 font-semibold text-dark">Film</span>
-                        </h3>
-                    </div>
-                    <!-- end card header -->
-                    <!-- card body  -->
-                    <div class="flex-auto block py-8 pt-6 px-9">
-                        <div class="overflow-x-auto">
-                            <table class="w-full my-0 align-middle text-dark border-neutral-200">
-                                <thead class="align-bottom">
-                                    <tr class="font-semibold text-[0.95rem] text-secondary-dark">
-                                        <th class="pb-3 text-center">Title</th>
-                                        <th class="pb-3 text-center">Sinopsis Trailer</th>
-                                        <th class="pb-3 text-center">Url Trailer</th>
-                                        <th class="pb-3 text-center">Release Date Trailer</th>
-                                        <th class="pb-3 text-center">Tayangan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for film in film %}
-                                    <tr class="border-b border-dashed last:border-b-0">
-
-                                        {% comment %} Title {% endcomment %}
-                                        <td class="text-center">
-                                            <span class="font-semibold text-light-inverse text-md/normal">{{ film.judul }}</span>
-                                        </td>
-
-                                        {% comment %} Sinopsis Trailer {% endcomment %}
-                                        <td class="text-center">
-                                            <span class="text-center align-baseline inline-flex px-4 py-3 mr-auto items-center font-semibold text-[.95rem] leading-none text-primary bg-primary-light rounded-lg"> {{film.sinopsis_trailer}} </span>
-                                        </td>
-
-                                        {% comment %} Url Trailer {% endcomment %}
-                                        <td class="text-center">
-                                            <span class="font-semibold text-light-inverse text-md/normal">{{film.url_video_trailer}}</span>
-                                        </td>
-
-                                        {% comment %} Tanggal rilis Trailer {% endcomment %}
-                                        <td class="text-center">
-                                           <span class="font-semibold text-light-inverse text-md/normal">{{film.release_date_trailer}}</span>
-                                        </td>
-
-                                        {% comment %} Tayangan {% endcomment %}
-                                        <td class="text-center">
-                                            {% for pengguna_row in pengguna %}
-                                                {% if pengguna_row.username == username  %}
-                                                    <a href="{% url 'shows:detail' judul=film.judul %}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                                        Tayangan
-                                                    </a>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-
-                                    </tr>
-                                    {% endfor %}
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="mt-10 mb-2 text-slate-100 text-center">
+        <p class="text-xl">Films</p>
+    </div>
+    <div class="mx-auto px-8">
+        <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-xl mx-auto table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr class="text-center">
+                    <th scope="col" class="px-6 py-3">
+                        Title
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Synopsis
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer URL
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Release Date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Show
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-[#242831]">
+                {% for item in film %}
+                    <tr>
+                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
+                        <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
+                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4">{{item.release_date_trailer}}</td>
+                        <td class="px-6 py-4">
+                        {% for pengguna_row in pengguna %}
+                            {% if pengguna_row.username == username  %}
+                                <a href="{% url 'shows:detail' judul=item.judul %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                    Show
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     {% comment %} Series {% endcomment %}
-    <div id="series" class="flex flex-wrap -mx-3 mb-5">
-        <div class="w-full max-w-full px-3 mb-6  mx-auto">
-            <div class="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
-                <div class="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
-                    <!-- card header -->
-                    <div class="px-9 pt-5 flex justify-between items-stretch flex-wrap min-h-[70px] pb-0 bg-transparent ">
-                        <h3 class="flex flex-col items-start justify-center m-2 ml-0 font-medium text-xl/tight text-dark">
-                            <span class="mr-3 font-semibold text-dark">Series</span>
-                        </h3>
-                    </div>
-                    <!-- end card header -->
-                    <!-- card body  -->
-                    <div class="flex-auto block py-8 pt-6 px-9">
-                        <div class="overflow-x-auto">
-                            <table class="w-full my-0 align-middle text-dark border-neutral-200">
-                                <thead class="align-bottom">
-                                    <tr class="font-semibold text-[0.95rem] text-secondary-dark">
-                                        <th class="pb-3 text-center">Title</th>
-                                        <th class="pb-3 text-center">Sinopsis Trailer</th>
-                                        <th class="pb-3 text-center">Url Trailer</th>
-                                        <th class="pb-3 text-center">Release Date Trailer</th>
-                                        <th class="pb-3 text-center">Tayangan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for series in series %}
-                                    <tr class="border-b border-dashed last:border-b-0">
-
-                                        {% comment %} Title {% endcomment %}
-                                        <td class="text-center">
-                                            <span class="font-semibold text-light-inverse text-md/normal">{{ series.judul }}</span>
-                                        </td>
-
-                                        {% comment %} Sinopsis Trailer {% endcomment %}
-                                        <td class="text-center">
-                                            <span class="text-center align-baseline inline-flex px-4 py-3 mr-auto items-center font-semibold text-[.95rem] leading-none text-primary bg-primary-light rounded-lg"> {{ series.sinopsis_trailer}} </span>
-                                        </td>
-
-                                        {% comment %} Url Trailer {% endcomment %}
-                                        <td class="text-center">
-                                            <span class="font-semibold text-light-inverse text-md/normal">{{ series.url_video_trailer}}</span>
-                                        </td>
-
-                                        {% comment %} Tanggal rilis Trailer {% endcomment %}
-                                        <td class="text-center">
-                                           <span class="font-semibold text-light-inverse text-md/normal">{{ series.release_date_trailer}}</span>
-                                        </td>
-
-                                        {% comment %} Tayangan {% endcomment %}
-                                        <td class="text-center">
-                                            {% for pengguna_row in pengguna %}
-                                                {% if pengguna_row.username == username  %}
-                                                    <a href="{% url 'shows:detail' judul=series.judul %}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                                        Tayangan
-                                                    </a>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-
-                                    </tr>
-                                    {% endfor %}
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="mt-10 mb-2 text-slate-100 text-center">
+        <p class="text-xl">Series</p>
+    </div>
+    <div class="mx-auto px-8">
+        <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-xl mx-auto table-auto">
+            <thead class="text-xs text-[#242831] uppercase bg-white">
+                <tr class="text-center">
+                    <th scope="col" class="px-6 py-3">
+                        Title
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Synopsis
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer URL
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Trailer Release Date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Show
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-[#242831]">
+                {% for item in series %}
+                    <tr>
+                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
+                        <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
+                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4">{{item.release_date_trailer}}</td>
+                        <td class="px-6 py-4">
+                        {% for pengguna_row in pengguna %}
+                            {% if pengguna_row.username == username  %}
+                                <a href="{% url 'shows:detail' judul=item.judul %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                    Show
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
+</div>
 </div>
 <script>
     const searchInput = document.getElementById('searchInput');
@@ -263,54 +191,51 @@
 
     const renderTable = (data, container, title) => {
     const tableHTML = `
-        <div class="w-full max-w-full px-3 mb-6 mx-auto">
-        <div class="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
-            <div class="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
-            <!-- card header -->
-            <div class="px-9 pt-5 flex justify-between items-stretch flex-wrap min-h-[70px] pb-0 bg-transparent">
-                <h3 class="flex flex-col items-start justify-center m-2 ml-0 font-medium text-xl/tight text-dark">
-                <span class="mr-3 font-semibold text-dark">${title}</span>
-                </h3>
-            </div>
-            <!-- end card header -->
-            <!-- card body -->
-            <div class="flex-auto block py-8 pt-6 px-9">
-                <div class="overflow-x-auto">
-                <table class="w-full my-0 align-middle text-dark border-neutral-200">
-                    <thead class="align-bottom">
-                    <tr class="font-semibold text-[0.95rem] text-secondary-dark">
-                        <th class="pb-3 text-center">Title</th>
-                        <th class="pb-3 text-center">Sinopsis Trailer</th>
-                        <th class="pb-3 text-center">Url Trailer</th>
-                        <th class="pb-3 text-center">Release Date Trailer</th>
-                        <th class="pb-3 text-center">Tayangan</th>
-
+    <div class="mt-10 mb-2 text-slate-100 text-center">
+            <p class="text-xl">${title}</p>
+        </div>
+        <div class="mx-auto px-8">
+            <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-xl mx-auto table-auto">
+                <thead class="text-xs text-[#242831] uppercase bg-white">
+                    <tr class="text-center">
+                        <th scope="col" class="px-6 py-3">
+                            Title
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Trailer Synopsis
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Trailer URL
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Trailer Release Date
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Show
+                        </th>
                     </tr>
-                    </thead>
-                    <tbody>
-                    ${data.map((item, index) => `
-                        <tr class="border-b border-dashed last:border-b-0">
-                        <td class="text-center"><span class="font-semibold text-light-inverse text-md/normal">${item.judul}</span></td>
-                        <td class="text-center"><span class="text-center align-baseline inline-flex px-4 py-3 mr-auto items-center font-semibold text-[.95rem] leading-none text-primary bg-primary-light rounded-lg">${item.sinopsis_trailer}</span></td>
-                        <td class="text-center"><span class="font-semibold text-light-inverse text-md/normal">${item.url_video_trailer}</span></td>
-                        <td class="text-center"><span class="font-semibold text-light-inverse text-md/normal">${item.release_date_trailer}</span></td>
+                </thead>
+                <tbody class="bg-[#242831]">
+                    ${data.map((item, index) => 
+                        `
+                        <tr>
+                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">${item.judul}</th>
+                        <td class="px-6 py-4 max-w-sm">${item.sinopsis_trailer}</td>
+                        <td class="px-6 py-4">${item.url_video_trailer}</td>
+                        <td class="px-6 py-4">${item.release_date_trailer}</td>
                         <td class="text-center">
                             ${isUserHasAccess(item.judul) ? `
-                                <a href="/shows/${item.judul}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                    Tayangan
+                                <a href="/shows/${item.judul}" class="mt-5 w-full rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                    Show
                                 </a>
                             ` : ''}
                         </td>
-
                         </tr>
-                    `).join('')}
-                    </tbody>
-                </table>
-                </div>
-            </div>
-            </div>
-        </div>
-        </div>
+                        `
+                    ).join('')}
+                </tbody>
+            </table>
+        </div> 
     `;
     container.innerHTML = tableHTML;
     }
@@ -344,7 +269,7 @@
                 resultsContainer.style.display = 'block'; // Tampilkan elemen #searchResults
             } else {
                 // Jika ada hasil, tampilkan hasil pencarian
-                renderTable(filteredTayangan, resultsContainer, 'Hasil Pencarian');
+                renderTable(filteredTayangan, resultsContainer, 'Search results');
                 resultsContainer.style.display = 'block'; // Tampilkan elemen #searchResults
             }
         }
