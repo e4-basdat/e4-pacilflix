@@ -5,14 +5,17 @@ from django.shortcuts import redirect, render
 from utils.query import query
 from django.views.decorators.csrf import csrf_exempt
 
+
 def show_tayangan(request):
     context = {
         "is_logged_in": False
     }
-    if "username" in request.session:
-        context["is_logged_in"] = True
-        context["username"] = request.session["username"]
-        
+    if 'username' not in request.session:
+        return redirect('authentication:login')
+
+    context["is_logged_in"] = True
+    context["username"] = request.session["username"]
+
     tayangan = query("""
         SELECT 
             judul,
@@ -22,7 +25,7 @@ def show_tayangan(request):
         FROM
             TAYANGAN
         """)
-    
+
     top_ten = query("""
         SELECT 
             TAYANGAN.judul,
@@ -58,7 +61,7 @@ def show_tayangan(request):
             TAYANGAN.release_date_trailer DESC
         LIMIT 10;
     """)
-    
+
     top_ten_lokal = query("""
         SELECT 
             TAYANGAN.judul,
@@ -96,7 +99,7 @@ def show_tayangan(request):
             TAYANGAN.release_date_trailer DESC
         LIMIT 10;
     """)
-    
+
     film = query("""
         SELECT 
             judul,
@@ -112,7 +115,7 @@ def show_tayangan(request):
         ORDER BY
             TAYANGAN.judul ASC;
         """)
-    
+
     series = query("""
         SELECT 
             judul,
@@ -139,19 +142,22 @@ def show_tayangan(request):
         ORDER BY
             username ASC;
         """)
-    
-    
-    context.update({'tayangan': tayangan, 'trailers': top_ten, 'film': film, 'series': series, 'pengguna': pengguna})
+
+    context.update({'tayangan': tayangan, 'trailers': top_ten,
+                   'film': film, 'series': series, 'pengguna': pengguna})
     return render(request, "shows.html", context)
+
 
 def tayangan_detail(request, judul):
     context = {
         "is_logged_in": False
     }
-    if "username" in request.session:
-        context["is_logged_in"] = True
-        context["username"] = request.session["username"]
-        
+    if 'username' not in request.session:
+        return redirect('authentication:login')
+
+    context["is_logged_in"] = True
+    context["username"] = request.session["username"]
+
     # Tayangan
     tayangan = query("""
         SELECT 
@@ -180,7 +186,7 @@ def tayangan_detail(request, judul):
         GROUP BY
             t.id,t.judul, t.sinopsis, t.asal_negara, total_view_all_time.total_view_all_time;
         """, (judul,))
-    
+
     # Film
     film = query("""
         SELECT
@@ -193,7 +199,7 @@ def tayangan_detail(request, judul):
         WHERE
             judul = %s;
         """, (judul,))
-    
+
     release_film = query("""
         SELECT
             id_tayangan, release_date_film
@@ -201,7 +207,7 @@ def tayangan_detail(request, judul):
         WHERE
             release_date_film <= CURRENT_DATE;
         """)
-    
+
     pemain = query("""
         SELECT
             nama
@@ -214,7 +220,7 @@ def tayangan_detail(request, judul):
         GROUP BY
             nama;
         """, (judul,))
-    
+
     penulis = query("""
         SELECT
             nama
@@ -227,7 +233,7 @@ def tayangan_detail(request, judul):
         GROUP BY
             nama;
         """, (judul,))
-    
+
     sutradara = query("""
         SELECT
             nama
@@ -240,7 +246,7 @@ def tayangan_detail(request, judul):
         GROUP BY
             nama;
         """, (judul,))
-    
+
     episode = query("""
         SELECT
             e.sub_judul,
@@ -252,7 +258,7 @@ def tayangan_detail(request, judul):
         ORDER BY
             e.sub_judul ASC;
         """, (judul,))
-    
+
     ulasan = query("""
         SELECT 
             username,
@@ -265,7 +271,7 @@ def tayangan_detail(request, judul):
         ORDER BY
             ulasan.timestamp DESC;
         """, (judul,))
-    
+
     # Query untuk mengecek apakah judul ada di tabel film
     is_film = query("""
         SELECT EXISTS (
@@ -274,20 +280,20 @@ def tayangan_detail(request, judul):
             )
         )
     """, (judul,))[0]
-    
+
     context.update({'tayangan': tayangan})
-    if pemain: 
+    if pemain:
         context.update({'pemain': pemain})
-        
-    if penulis: 
+
+    if penulis:
         context.update({'penulis': penulis})
-    
-    if sutradara: 
+
+    if sutradara:
         context.update({'sutradara': sutradara})
-    
+
     if ulasan:
         context.update({'ulasan': ulasan})
-        
+
     # Cek apakah Film atau Series
     if is_film['exists']:
         context.update({'film': film, 'release_film': release_film})
@@ -296,17 +302,19 @@ def tayangan_detail(request, judul):
         context.update({'episode': episode})
         template_name = 'series_detail.html'
 
-    
     return render(request, template_name, context)
+
 
 def episode_detail(request, judul, sub_judul):
     context = {
         "is_logged_in": False
     }
-    if "username" in request.session:
-        context["is_logged_in"] = True
-        context["username"] = request.session["username"]
-        
+    if 'username' not in request.session:
+        return redirect('authentication:login')
+
+    context["is_logged_in"] = True
+    context["username"] = request.session["username"]
+
     episode_khusus = query("""
         SELECT
             e.sub_judul,
@@ -323,7 +331,7 @@ def episode_detail(request, judul, sub_judul):
         ORDER BY
             e.sub_judul ASC;
         """, (judul, sub_judul))
-    
+
     episode = query("""
         SELECT
             e.sub_judul,
@@ -335,7 +343,7 @@ def episode_detail(request, judul, sub_judul):
         ORDER BY
             e.sub_judul ASC;
         """, (judul,))
-    
+
     release_episode = query("""
         SELECT
             sub_judul,release_date
@@ -344,8 +352,10 @@ def episode_detail(request, judul, sub_judul):
         WHERE 
             e.release_date <= CURRENT_DATE;
         """)
-    context.update({'episode':episode,'episode_khusus':episode_khusus,'release_episode': release_episode})
+    context.update({'episode': episode, 'episode_khusus': episode_khusus,
+                   'release_episode': release_episode})
     return render(request, "episode_detail.html", context)
+
 
 @csrf_exempt
 def save_review(request):
@@ -355,7 +365,7 @@ def save_review(request):
         rating = data['rating']
         id_tayangan = data['id_tayangan']
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+
         # Lakukan penyisipan data ke dalam basis data
         try:
             query("""
@@ -368,19 +378,20 @@ def save_review(request):
                 )
                 VALUES (%s, %s, %s, %s, %s);
                 """,
-                (
-                    id_tayangan,
-                    request.session.get("username", ""), 
-                    timestamp,
-                    rating,
-                    deskripsi
-                )
-            )
+                  (
+                      id_tayangan,
+                      request.session.get("username", ""),
+                      timestamp,
+                      rating,
+                      deskripsi
+                  )
+                  )
             return JsonResponse({"status": "success", "message": "Review added successfully."}, status=201)
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
     else:
         return JsonResponse({"status": "error", "message": "Method not allowed."}, status=405)
+
 
 def update_review(request, judul):
     ulasan = query("""
@@ -390,6 +401,5 @@ def update_review(request, judul):
         WHERE t.judul = %s
         ORDER BY ulasan.timestamp DESC;
     """, (judul,))
-    
-    return JsonResponse({'ulasan': ulasan}, content_type='application/json')
 
+    return JsonResponse({'ulasan': ulasan}, content_type='application/json')
