@@ -30,6 +30,16 @@
     {% comment %} 10 Tayangan terbaik minggu ini {% endcomment %}
     <div class="mt-10 mb-2 text-slate-100 text-center">
         <p class="text-xl">Top 10 best shows this week</p>
+        <div class="mb-4 text-slate-100 text-center">
+            <label class="text-sm">
+                Global
+                <input type="radio" name="type" value="global" checked >
+            </label>
+            <label class="text-sm">
+                Lokal
+                <input type="radio" name="type" value="lokal">
+            </label>
+        </div>
     </div>
     <div class="mx-auto px-8">
         <table class="w-full text-sm text-left rtl:text-right text-white max-w-screen-xl mx-auto table-auto">
