@@ -95,4 +95,4 @@ jobs:
             docker rm ${{ secrets.DOCKER_CONTAINER_NAME }} || true
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
             docker run -dt --restart unless-stopped -p 443:8000 -p 8000:8000 -p 80:8000 --name ${{ secrets.DOCKER_CONTAINER_NAME }} ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
-            docker image prune -
+            docker image prune
