@@ -21,7 +21,7 @@
                 <button type="submit" class="mt-5 w-full rounded-md font-bold text-white border px-12 py-4 hover:bg-white hover:text-[#242831] duration-300">LOGIN</button>
             </div>
             {% if message %}
-            <p class="text-center text-sm text-red-500 mt-2">{{ message }}</p>
+            <p class="text-center text-sm {{ msg_color }} mt-2">{{ message }}</p>
             {% endif %}
         </form>
     </div>
