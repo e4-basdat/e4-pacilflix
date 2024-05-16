@@ -1,4 +1,5 @@
 from django.shortcuts import redirect, render
+import psycopg2
 from utils.query import query
 from django.http import JsonResponse
 import random as r
@@ -14,17 +15,15 @@ def register(request):
         password = request.POST.get("password")
         negara_asal = request.POST.get("country")
 
-        # Select a random show to recommend to new user
-        random_show = str(r.choice(query("SELECT id FROM tayangan"))["id"])
+        data = query("INSERT INTO pengguna (username, password, negara_asal) VALUES (%s,%s,%s)",
+                     (username, password, negara_asal))
 
-        # Validate user with the same username doesn't exist
-        exists = query(
-            "SELECT * FROM pengguna WHERE username = %s", (username,))
-        if len(exists) > 0:
-            context["message"] = "Username already taken. Please choose another username."
+        # If trigger is called, Postgres will raise error to psycopg2
+        if isinstance(data, psycopg2.errors.RaiseException):
+            error_msg = str(data).split("\n")[0]
+            context["message"] = error_msg
         else:
-            data = query("INSERT INTO pengguna (username, password, id_tayangan, negara_asal) VALUES (%s,%s,%s,%s)",
-                         (username, password, random_show, negara_asal))
+            request.session["msg_color"] = "text-blue-500"
             request.session["message"] = "Account creation successful! You can log in now."
             return redirect("authentication:login")
     return render(request, "register.html", context)
@@ -36,6 +35,7 @@ def login(request):
         # TODO: Ganti redirect jadi ke "Shows" (daftar tayangan)
         return redirect("shows:tayangan")
     if "message" in request.session:
+        context["msg_color"] = request.session["msg_color"]
         context["message"] = request.session["message"]
         del request.session["message"]
     if request.method == "POST":
@@ -48,6 +48,7 @@ def login(request):
             # TODO: Ganti redirect jadi ke "Shows" (daftar tayangan)
             return redirect("shows:tayangan")
         else:
+            context["msg_color"] = "text-red-500"
             context["message"] = "Login failed. Make sure you've inputted the correct credentials."
     return render(request, "login.html", context)
 
