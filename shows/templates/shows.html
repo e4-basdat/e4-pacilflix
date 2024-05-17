@@ -69,17 +69,17 @@
             </thead>
             <tbody class="bg-[#242831]">
                 {% for item in trailers %}
-                    <tr>
+                    <tr class=" text-center">
                         <td class="px-6 py-4">{{forloop.counter}}</td>
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
                         <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
-                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4"><a href="{{item.url_video_trailer}}" class="text-blue-400 hover:underline">{{item.url_video_trailer}}</a></td>
                         <td class="px-6 py-4">{{item.release_date_trailer}}</td>
                         <td class="px-6 py-4">{{item.total_view_7_days}}</td>
                         <td class="px-6 py-4">
                         {% for pengguna_row in pengguna %}
                             {% if pengguna_row.username == username  %}
-                                <a href="{% url 'shows:detail' judul=item.judul %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                <a href="{% url 'shows:detail' id=item.id %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
                                     Show
                                 </a>
                             {% endif %}
@@ -118,15 +118,15 @@
             </thead>
             <tbody class="bg-[#242831]">
                 {% for item in film %}
-                    <tr>
+                    <tr class=" text-center">
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
                         <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
-                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4"><a href="{{item.url_video_trailer}}" class="text-blue-400 hover:underline">{{item.url_video_trailer}}</a></td>
                         <td class="px-6 py-4">{{item.release_date_trailer}}</td>
                         <td class="px-6 py-4">
                         {% for pengguna_row in pengguna %}
                             {% if pengguna_row.username == username  %}
-                                <a href="{% url 'shows:detail' judul=item.judul %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                <a href="{% url 'shows:detail' id=item.id %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
                                     Show
                                 </a>
                             {% endif %}
@@ -165,15 +165,15 @@
             </thead>
             <tbody class="bg-[#242831]">
                 {% for item in series %}
-                    <tr>
+                    <tr class=" text-center">
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
                         <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
-                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4"><a href="{{item.url_video_trailer}}" class="text-blue-400 hover:underline">{{item.url_video_trailer}}</a></td>
                         <td class="px-6 py-4">{{item.release_date_trailer}}</td>
                         <td class="px-6 py-4">
                         {% for pengguna_row in pengguna %}
                             {% if pengguna_row.username == username  %}
-                                <a href="{% url 'shows:detail' judul=item.judul %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                <a href="{% url 'shows:detail' id=item.id %}" class="mt-5 w-full max-w-sm rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
                                     Show
                                 </a>
                             {% endif %}
@@ -228,14 +228,14 @@
                 <tbody class="bg-[#242831]">
                     ${data.map((item, index) => 
                         `
-                        <tr>
+                        <tr class=" text-center">
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">${item.judul}</th>
                         <td class="px-6 py-4 max-w-sm">${item.sinopsis_trailer}</td>
-                        <td class="px-6 py-4">${item.url_video_trailer}</td>
+                        <td class="px-6 py-4"><a href="${item.url_video_trailer}" class="text-blue-400 hover:underline">${item.url_video_trailer}</a></td>
                         <td class="px-6 py-4">${item.release_date_trailer}</td>
                         <td class="text-center">
                             ${isUserHasAccess(item.judul) ? `
-                                <a href="/shows/${item.judul}" class="mt-5 w-full rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                <a href="/shows/${item.id}" class="mt-5 w-full rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
                                     Show
                                 </a>
                             ` : ''}

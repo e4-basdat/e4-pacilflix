@@ -67,11 +67,11 @@
             </thead>
             <tbody class="bg-[#242831]">
                 {% for item in trailers %}
-                    <tr>
+                    <tr class=" text-center">
                         <td class="px-6 py-4">{{forloop.counter}}</td>
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
                         <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
-                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4"><a href="{{item.url_video_trailer}}" class="text-blue-400 hover:underline">{{item.url_video_trailer}}</a></td>
                         <td class="px-6 py-4">{{item.release_date_trailer}}</td>
                         <td class="px-6 py-4">{{item.total_view_7_days}}</td>
                     </tr>
@@ -104,10 +104,10 @@
             </thead>
             <tbody class="bg-[#242831]">
                 {% for item in film %}
-                    <tr>
+                    <tr class=" text-center">
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
                         <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
-                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4"><a href="{{item.url_video_trailer}}" class="text-blue-400 hover:underline">{{item.url_video_trailer}}</a></td>
                         <td class="px-6 py-4">{{item.release_date_trailer}}</td>
                     </tr>
                 {% endfor %}
@@ -139,10 +139,10 @@
             </thead>
             <tbody class="bg-[#242831]">
                 {% for item in film %}
-                    <tr>
+                    <tr class=" text-center">
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
                         <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
-                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4"><a href="{{item.url_video_trailer}}" class="text-blue-400 hover:underline">{{item.url_video_trailer}}</a></td>
                         <td class="px-6 py-4">{{item.release_date_trailer}}</td>
                     </tr>
                 {% endfor %}
@@ -190,10 +190,10 @@
                 <tbody class="bg-[#242831]">
                     ${data.map((item, index) => 
                         `
-                        <tr>
+                        <tr class=" text-center">
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">${item.judul}</th>
                         <td class="px-6 py-4 max-w-sm">${item.sinopsis_trailer}</td>
-                        <td class="px-6 py-4">${item.url_video_trailer}</td>
+                        <td class="px-6 py-4"><a href="${item.url_video_trailer}" class="text-blue-400 hover:underline">${item.url_video_trailer}</a></td>
                         <td class="px-6 py-4">${item.release_date_trailer}</td>
                         </tr>
                         `

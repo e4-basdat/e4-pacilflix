@@ -1,6 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    @media screen and (-webkit-min-device-pixel-ratio: 0) {
+     
+        input[type="range"]::-webkit-slider-thumb {
+            width: 15px;
+            -webkit-appearance: none;
+  			appearance: none;
+            height: 15px;
+            cursor: ew-resize;
+            background: #FFF;
+            box-shadow: -405px 0 0 400px #605E5C;
+            border-radius: 50%;
+            
+        }
+    }
+</style>
 <div class="mx-auto min-h-screen bg-[#242831] font-inter_tight pb-6">
 <div class="container mx-auto px-4 py-4" style="cursor: auto;">
     <div class="mb-12 text-slate-100 text-center">
@@ -19,13 +35,19 @@
                 </tr>
                 {% for film in release_film %}
                     {% if tayangan.0.id == film.id_tayangan %}
-                        <tr>
-                            <td class="text-center">
-                                <a href="#" class="mt-5 w-full block rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
-                                    Watch
-                                </a>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td class="text-left">
+                            <div class="mt-5">
+                                <input id="input-range-{{ film.id_tayangan }}" class="w-full rounded-lg overflow-hidden appearance-none bg-gray-400 h-4 w-128" type="range" min="1" max="100" step="1" value="0" />
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center">
+                            <button type="submit" id="watch" onclick="saveWatchingHistory('{{ film.id_tayangan }}')" class="mt-5 w-full block rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">Watch</button>
+                        </td>
+                    </tr>
                     {% endif %}
                 {% endfor %}
                 <tr>
@@ -45,114 +67,63 @@
             </table>
         </div>
     </div>
-    <div class="flex flex-col">
-        <div class="mb-4">
-            <table>
-                <tr>
-                    <td class="text-left">
-                        {% for t in tayangan %}
-                            <div class="mt-10 mb-2 text-slate-100">
-                                <p class="text-xl">Total view: {{t.total_view_all_time}}</p>
-                            </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        {% for t in tayangan %}
-                            <div class="mb-2 text-slate-100">
-                                <p class="text-xl">Average rating: {{t.rating_rata_rata}}</p>
-                            </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        {% for t in tayangan %}
-                        <div class="mb-2 text-slate-100">
-                            <p class="text-xl">Synopsis: {{t.sinopsis}}</p>
-                        </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        {% for f in film %}
-                            <div class="mb-2 text-slate-100">
-                                <p class="text-xl">Film duration: {{f.durasi_film}}</p>
-                            </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        {% for f in film %}
-                            <div class="mb-2 text-slate-100">
-                                <p class="text-xl">Release date: {{f.release_date_film}}</p>
-                            </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        {% for f in film %}
-                            <div class="mb-2 text-slate-100">
-                                <p class="text-xl">Film URL: {{f.url_video_film}}</p>
-                            </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        {% for t in tayangan %}
-                            <div class="mb-2 text-slate-100">
-                                <p class="text-xl">Genre: {{t.genre}}</p>
-                            </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        {% for t in tayangan %}
-                            <div class="mb-2 text-slate-100">
-                                <p class="text-xl">Country of origin: {{t.asal_negara}}</p>
-                            </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left pt-8">
-                        <div class="mb-2 text-slate-100">
-                            <p class="text-xl">Actors:</p>
-                        </div>
-                        {% for actor in pemain %}
-                            <span style="margin-left: 20px;" class="text-white">- {{ actor.nama }}</span><br>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        <div class="mb-2 text-slate-100">
-                            <p class="text-xl">Screenwriters:</p>
-                        </div>
-                        {% for actor in penulis %}
-                            <span style="margin-left: 20px;" class="text-white">- {{ actor.nama }}</span><br>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        <div class="mb-2 text-slate-100">
-                            <p class="text-xl">Director:</p>
-                        </div>
-                        {% for actor in sutradara %}
-                            <span style="margin-left: 20px;" class="text-white">- {{ actor.nama }}</span><br>
-                        {% endfor %}
-                    </td>
-                </tr>
-            </table>
+    <div class="flex flex-col space-y-4">
+        {% for t in tayangan %}
+        <div class="bg-[#333845] rounded-lg p-6 shadow-lg transition transform hover:-translate-y-1 hover:shadow-xl">
+            <div class="text-white mb-4">
+                <p class="text-2xl font-bold">Total View: {{t.total_view_all_time}}</p>
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl">Average Rating: {{t.rating_rata_rata}}</p>
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl">Synopsis: {{t.sinopsis}}</p>
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl">Genre: {{t.genre}}</p>
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl">Country of Origin: {{t.asal_negara}}</p>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% for f in film %}
+        <div class="bg-[#333845] rounded-lg p-6 shadow-lg transition transform hover:-translate-y-1 hover:shadow-xl">
+            <div class="text-white mb-4">
+                <p class="text-xl">Film Duration: {{f.durasi_film}}</p>
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl">Release Date: {{f.release_date_film}}</p>
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl">Film URL: <a href="{{ f.url_video_film }}" class="text-blue-400 hover:underline">{{ f.url_video_film }}</a></p>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="bg-[#333845] rounded-lg p-6 shadow-lg transition transform hover:-translate-y-1 hover:shadow-xl">
+            <div class="text-white mb-4">
+                <p class="text-xl">Actors:</p>
+                {% for actor in pemain %}
+                <span class="block ml-5">- {{ actor.nama }}</span>
+                {% endfor %}
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl">Screenwriters:</p>
+                {% for actor in penulis %}
+                <span class="block ml-5">- {{ actor.nama }}</span>
+                {% endfor %}
+            </div>
+            <div class="text-white">
+                <p class="text-xl">Director:</p>
+                {% for actor in sutradara %}
+                <span class="block ml-5">- {{ actor.nama }}</span>
+                {% endfor %}
+            </div>
         </div>
     </div>
+
     
     <div class="container mx-auto px-4 py-4">
         <div class="mb-12 text-slate-100 text-center">
@@ -198,6 +169,9 @@
             </div>
         </div>
     </div>
+    
+    <div id="error-container" style="color: red;"></div>
+
 
 
     <!-- Daftar ulasan -->
@@ -227,24 +201,31 @@
     });
 
     function updateReview() {
-        fetch("{% url 'shows:update_review' judul=tayangan.0.judul %}")
+        fetch("{% url 'shows:update_review' id=tayangan.0.id %}")
         .then(response => response.json())
         .then(data => {
             const reviewContainer = document.getElementById('review-container');
             reviewContainer.innerHTML = ''; // Clear previous content
-            
+
             data.ulasan.forEach(review => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('text-slate-100', 'mb-4');
-                listItem.innerHTML = `
-                    <span style="margin-left: 20px;" class="text-white">
-                        Username: ${review.username}</span><br>
-                    <span style="margin-left: 20px;" class="text-white">Deskripsi: ${review.deskripsi}</span><br>
-                    <span style="margin-left: 20px;" class="text-white">Rating: ${review.rating}</span><br>
+                const card = document.createElement('div');
+                card.classList.add('bg-[#333845]', 'rounded-lg', 'p-6', 'mb-4', 'shadow-lg', 'transition', 'transform', 'hover:-translate-y-1', 'hover:shadow-xl');
+
+                card.innerHTML = `
+                    <div class="text-white font-bold mb-2">
+                        <span class="block text-xl">Username: ${review.username}</span>
+                    </div>
+                    <div class="text-white mb-2">
+                        <span class="block">Deskripsi: ${review.deskripsi}</span>
+                    </div>
+                    <div class="text-white">
+                        <span class="block">Rating: ${review.rating}</span>
+                    </div>
                 `;
-                reviewContainer.appendChild(listItem);
+                reviewContainer.appendChild(card);
             });
         })
+
         .catch(error => console.error('Error:', error));
     }
 
@@ -267,8 +248,9 @@
                 rating: rating
             })
         })
-        .then(response => {
-            if (response.ok) {
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
                 // Update the review container with the new data
                 updateReview();
                 // Reset form
@@ -276,12 +258,54 @@
                 // Close modal
                 toggleModal();
             } else {
-                throw new Error('Failed to add review');
+                // If there is an error, display the error message
+                updateReview();
+                console.error('Error:', data.message);
+                // You can display the error message in an alert or in an error container on your page
+                // For example:
+                const errorContainer = document.getElementById('error-container');
+                errorContainer.innerText = data.message;
+                document.getElementById("post-form").reset();
+                toggleModal();
             }
         })
         .catch(error => console.error('Error:', error));
     }
     updateReview()
+
+    function saveWatchingHistory(id_tayangan) {
+        const slider = document.getElementById(`input-range-${id_tayangan}`);
+        const watchingPercentage = slider.value;
+
+        console.log('watching_percentage:', watchingPercentage); // Debugging
+
+        const data = {
+            id_tayangan: id_tayangan,
+            watching_percentage: watchingPercentage
+        };
+
+        fetch("{% url 'shows:save_watching_history' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => {
+            if (response.ok) {
+                // Jika respons berhasil (status 201), perbarui halaman
+                window.location.reload();
+            } else {
+                // Tangkap pesan kesalahan jika diperlukan
+                return response.json().then(data => {
+                    throw new Error(data.message);
+                });
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
     // Call the updateReview function when the page loads
 
     const postForm = document.getElementById('post-form');
