@@ -105,11 +105,11 @@
 {% block script %}
 <script>
     async function fetchSubscriptionData() {
-        return fetch("{% url 'subscription:get_user_active_package' %}").then((res) => res.json())
+        return fetch("{% url 'subscription:get_active_subscription' %}").then((res) => res.json())
     }
 
     async function fetchAllSubscriptionPackages() {
-        return fetch("{% url 'subscription:get_all_packages' %}").then((res) => res.json())
+        return fetch("{% url 'subscription:get_all_subscription_details' %}").then((res) => res.json())
     }
 
     async function fetchAllTransactionHistory() {
@@ -117,7 +117,7 @@
     }
 
     async function fetchSubscriptionEligibility() {
-        return fetch("{% url 'subscription:check_subscription_eligibility' %}").then((res) => res.json())
+        return fetch("{% url 'subscription:get_subscription_eligibilty' %}").then((res) => res.json())
     }
 
     async function refreshSubscriptionData() {
@@ -125,7 +125,7 @@
             const data = await fetchSubscriptionData() ;
 
             if (data.status === 'success') {
-                const subscription = data.data.transaction;
+                const subscription = data.data.active_subscription;
                 const subscriptionBody = document.getElementById('subscriptionBody');
 
                 if (Object.keys(subscription).length === 0) {
@@ -172,7 +172,7 @@
 
                 allSubscriptionPackagesBody.innerHTML = '';
 
-                if (subscriptionEligibility.status === 'error') {
+                if (subscriptionEligibility.status === 'error' && subscriptionEligibility.data.is_eligible === false) {
                     const notEligibleMsg = document.getElementById('not-eligible-msg');
                     notEligibleMsg.style.display = 'block';
                     notEligibleMsg.innerHTML = subscriptionEligibility.message;
@@ -213,7 +213,7 @@
             const data = await fetchAllTransactionHistory();
 
             if (data.status === 'success') {
-                const transactionHistory = data.data.transaction;
+                const transactionHistory = data.data.transactions;
                 const allTransactionHistoryBody = document.getElementById('allTransactionHistoryBody');
 
                 allTransactionHistoryBody.innerHTML = '';
