@@ -1,6 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    @media screen and (-webkit-min-device-pixel-ratio: 0) {
+     
+        input[type="range"]::-webkit-slider-thumb {
+            width: 15px;
+            -webkit-appearance: none;
+  			appearance: none;
+            height: 15px;
+            cursor: ew-resize;
+            background: #FFF;
+            box-shadow: -405px 0 0 400px #605E5C;
+            border-radius: 50%;
+            
+        }
+    }
+</style>
 <div class="mx-auto min-h-screen bg-[#242831] font-inter_tight pb-6">
 <div class="container mx-auto px-4 py-4" style="cursor: auto;">
     <div class="mb-12 text-slate-100 text-center">
@@ -19,13 +35,19 @@
                 </tr>
                 {% for film in release_film %}
                     {% if tayangan.0.id == film.id_tayangan %}
-                        <tr>
-                            <td class="text-center">
-                                <a href="#" class="mt-5 w-full block rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
-                                    Watch
-                                </a>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td class="text-left">
+                            <div class="mt-5">
+                                <input id="input-range-{{ film.id_tayangan }}" class="w-full rounded-lg overflow-hidden appearance-none bg-gray-400 h-4 w-128" type="range" min="1" max="100" step="1" value="0" />
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-center">
+                            <button type="submit" id="watch" onclick="saveWatchingHistory('{{ film.id_tayangan }}')" class="mt-5 w-full block rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">Watch</button>
+                        </td>
+                    </tr>
                     {% endif %}
                 {% endfor %}
                 <tr>
@@ -198,6 +220,9 @@
             </div>
         </div>
     </div>
+    
+    <div id="error-container" style="color: red;"></div>
+
 
 
     <!-- Daftar ulasan -->
@@ -227,7 +252,7 @@
     });
 
     function updateReview() {
-        fetch("{% url 'shows:update_review' judul=tayangan.0.judul %}")
+        fetch("{% url 'shows:update_review' id=tayangan.0.id %}")
         .then(response => response.json())
         .then(data => {
             const reviewContainer = document.getElementById('review-container');
@@ -267,8 +292,9 @@
                 rating: rating
             })
         })
-        .then(response => {
-            if (response.ok) {
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
                 // Update the review container with the new data
                 updateReview();
                 // Reset form
@@ -276,12 +302,54 @@
                 // Close modal
                 toggleModal();
             } else {
-                throw new Error('Failed to add review');
+                // If there is an error, display the error message
+                updateReview();
+                console.error('Error:', data.message);
+                // You can display the error message in an alert or in an error container on your page
+                // For example:
+                const errorContainer = document.getElementById('error-container');
+                errorContainer.innerText = data.message;
+                document.getElementById("post-form").reset();
+                toggleModal();
             }
         })
         .catch(error => console.error('Error:', error));
     }
     updateReview()
+
+    function saveWatchingHistory(id_tayangan) {
+        const slider = document.getElementById(`input-range-${id_tayangan}`);
+        const watchingPercentage = slider.value;
+
+        console.log('watching_percentage:', watchingPercentage); // Debugging
+
+        const data = {
+            id_tayangan: id_tayangan,
+            watching_percentage: watchingPercentage
+        };
+
+        fetch("{% url 'shows:save_watching_history' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => {
+            if (response.ok) {
+                // Jika respons berhasil (status 201), perbarui halaman
+                window.location.reload();
+            } else {
+                // Tangkap pesan kesalahan jika diperlukan
+                return response.json().then(data => {
+                    throw new Error(data.message);
+                });
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
     // Call the updateReview function when the page loads
 
     const postForm = document.getElementById('post-form');
