@@ -4,13 +4,12 @@ from subscription.views import *
 app_name = "subscription"
 
 urlpatterns = [
-    path("my-subscription-package/", get_user_active_package, name="get_user_active_package"),
-    path("subscription-packages/", get_all_packages, name="get_all_packages"),
-    path("my-subscription-history/", get_transaction_history, name="get_transaction_history"),
-    path("", render_subscription_manager, name="render_subscription_manager"),
-    path("subscription-packages/<str:package_name>/", get_package_details_by_name, name="get_package_details_by_name"),
+    path("active-subscription/", get_active_subscription, name="get_active_subscription"),
+    path("subscription-details/<str:package_name>/", get_subscription_details_by_name, name="get_subscription_details_by_name"),
+    path("subscription-details/", get_all_subscription_details, name="get_all_subscription_details"),
+    path("transactions/", get_transaction_history, name="get_transaction_history"),
+    path("is-eligible-to-subscribe/", get_subscription_eligibilty, name="get_subscription_eligibilty"),
+    path("purchase-subscription/", purchase_subscription, name="purchase_subscription"),
+    path("", render_subscription_details, name="render_subscription_details"),
     path("subscribe/<str:package_name>/", render_subscription_purchase, name="render_subscription_purchase"),
-    path("purchase-subscription/", add_subscription, name="add_subscription"),
-    path("update-subscription/", update_subscription, name="update_subscription"),
-    path("subscription-eligibility/", check_subscription_eligibility, name="check_subscription_eligibility"),
 ]

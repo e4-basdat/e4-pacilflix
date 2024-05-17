@@ -9,7 +9,7 @@ import os
 try:
     connection = psycopg2.connect(user=os.getenv("DB_USERNAME", "postgres"),
                                   password=os.getenv(
-                                      "DB_PASSWORD", "thaariq23"),
+                                      "DB_PASSWORD", "postgres"),
                                   host=os.getenv("DB_HOST", "localhost"),
                                   port=os.getenv("DB_PORT", "5432"),
                                   database=os.getenv("DB_NAME", "postgres"))

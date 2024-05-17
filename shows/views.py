@@ -6,14 +6,17 @@ from utils.query import query
 from django.views.decorators.csrf import csrf_exempt
 import psycopg2
 
+
 def show_tayangan(request):
     context = {
         "is_logged_in": False
     }
-    if "username" in request.session:
-        context["is_logged_in"] = True
-        context["username"] = request.session["username"]
-        
+    if 'username' not in request.session:
+        return redirect('authentication:login')
+
+    context["is_logged_in"] = True
+    context["username"] = request.session["username"]
+
     tayangan = query("""
         SELECT 
             judul,
@@ -23,7 +26,7 @@ def show_tayangan(request):
         FROM
             TAYANGAN
         """)
-    
+
     top_ten = query("""
         SELECT
             TAYANGAN.id,
@@ -162,7 +165,7 @@ def show_tayangan(request):
             TAYANGAN.release_date_trailer DESC
         LIMIT 10;
     """)
-    
+
     film = query("""
         SELECT 
             id,
@@ -179,7 +182,7 @@ def show_tayangan(request):
         ORDER BY
             TAYANGAN.judul ASC;
         """)
-    
+
     series = query("""
         SELECT
             id, 
@@ -207,19 +210,22 @@ def show_tayangan(request):
         ORDER BY
             username ASC;
         """)
-    
-    
-    context.update({'tayangan': tayangan, 'trailers': top_ten, 'film': film, 'series': series, 'pengguna': pengguna})
+
+    context.update({'tayangan': tayangan, 'trailers': top_ten,
+                   'film': film, 'series': series, 'pengguna': pengguna})
     return render(request, "shows.html", context)
+
 
 def tayangan_detail(request, id):
     context = {
         "is_logged_in": False
     }
-    if "username" in request.session:
-        context["is_logged_in"] = True
-        context["username"] = request.session["username"]
-        
+    if 'username' not in request.session:
+        return redirect('authentication:login')
+
+    context["is_logged_in"] = True
+    context["username"] = request.session["username"]
+
     # Tayangan
     tayangan = query("""
         SELECT 
@@ -248,7 +254,7 @@ def tayangan_detail(request, id):
         GROUP BY
             t.id,t.judul, t.sinopsis, t.asal_negara, total_view_all_time.total_view_all_time;
         """, (id,))
-    
+
     # Film
     film = query("""
         SELECT
@@ -261,7 +267,7 @@ def tayangan_detail(request, id):
         WHERE
             id_tayangan = %s;
         """, (id,))
-    
+
     release_film = query("""
         SELECT
             id_tayangan, release_date_film
@@ -269,7 +275,7 @@ def tayangan_detail(request, id):
         WHERE
             release_date_film <= CURRENT_DATE;
         """)
-    
+
     pemain = query("""
         SELECT
             nama
@@ -282,7 +288,7 @@ def tayangan_detail(request, id):
         GROUP BY
             nama;
         """, (id,))
-    
+
     penulis = query("""
         SELECT
             nama
@@ -295,7 +301,7 @@ def tayangan_detail(request, id):
         GROUP BY
             nama;
         """, (id,))
-    
+
     sutradara = query("""
         SELECT
             nama
@@ -308,7 +314,7 @@ def tayangan_detail(request, id):
         GROUP BY
             nama;
         """, (id,))
-    
+
     episode = query("""
         SELECT
             t.id,
@@ -321,7 +327,7 @@ def tayangan_detail(request, id):
         ORDER BY
             e.sub_judul ASC;
         """, (id,))
-    
+
     ulasan = query("""
         SELECT 
             username,
@@ -334,7 +340,7 @@ def tayangan_detail(request, id):
         ORDER BY
             ulasan.timestamp DESC;
         """, (id,))
-    
+
     # Query untuk mengecek apakah judul ada di tabel film
     is_film = query("""
         SELECT EXISTS (
@@ -343,20 +349,20 @@ def tayangan_detail(request, id):
             )
         )
     """, (id,))[0]
-    
+
     context.update({'tayangan': tayangan})
-    if pemain: 
+    if pemain:
         context.update({'pemain': pemain})
-        
-    if penulis: 
+
+    if penulis:
         context.update({'penulis': penulis})
-    
-    if sutradara: 
+
+    if sutradara:
         context.update({'sutradara': sutradara})
-    
+
     if ulasan:
         context.update({'ulasan': ulasan})
-        
+
     # Cek apakah Film atau Series
     if is_film['exists']:
         context.update({'film': film, 'release_film': release_film})
@@ -365,17 +371,19 @@ def tayangan_detail(request, id):
         context.update({'episode': episode})
         template_name = 'series_detail.html'
 
-    
     return render(request, template_name, context)
 
-def episode_detail(request,id,sub_judul):
+
+def episode_detail(request, id, sub_judul):
     context = {
         "is_logged_in": False
     }
-    if "username" in request.session:
-        context["is_logged_in"] = True
-        context["username"] = request.session["username"]
-        
+    if 'username' not in request.session:
+        return redirect('authentication:login')
+
+    context["is_logged_in"] = True
+    context["username"] = request.session["username"]
+
     episode_khusus = query("""
         SELECT
             e.sub_judul,
@@ -391,8 +399,8 @@ def episode_detail(request,id,sub_judul):
             e.sub_judul = %s
         ORDER BY
             e.sub_judul ASC;
-        """, (id,sub_judul))
-    
+        """, (id, sub_judul))
+
     episode = query("""
         SELECT
             t.id,
@@ -405,7 +413,7 @@ def episode_detail(request,id,sub_judul):
         ORDER BY
             e.sub_judul ASC;
         """, (id,))
-    
+
     release_episode = query("""
         SELECT
             id_series,sub_judul,release_date
@@ -414,8 +422,10 @@ def episode_detail(request,id,sub_judul):
         WHERE 
             e.release_date <= CURRENT_DATE;
         """)
-    context.update({'episode':episode,'episode_khusus':episode_khusus,'release_episode': release_episode})
+    context.update({'episode': episode, 'episode_khusus': episode_khusus,
+                   'release_episode': release_episode})
     return render(request, "episode_detail.html", context)
+
 
 @csrf_exempt
 def save_review(request):
@@ -425,7 +435,7 @@ def save_review(request):
         rating = data['rating']
         id_tayangan = data['id_tayangan']
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+
         # Lakukan penyisipan data ke dalam basis data
         try:
             data = query("""
@@ -438,14 +448,14 @@ def save_review(request):
                 )
                 VALUES (%s, %s, %s, %s, %s);
                 """,
-                (
-                    id_tayangan,
-                    request.session.get("username", ""), 
-                    timestamp,
-                    rating,
-                    deskripsi
-                )
-            )
+                         (
+                             id_tayangan,
+                             request.session.get("username", ""),
+                             timestamp,
+                             rating,
+                             deskripsi
+                         )
+                         )
             if isinstance(data, psycopg2.errors.RaiseException):
                 error_msg = str(data).split("\n")[0]
                 return JsonResponse({"status": "error", "message": error_msg}, status=400)
@@ -456,6 +466,7 @@ def save_review(request):
     else:
         return JsonResponse({"status": "error", "message": "Method not allowed."}, status=405)
 
+
 def update_review(request, id):
     ulasan = query("""
         SELECT username, deskripsi, rating
@@ -464,8 +475,9 @@ def update_review(request, id):
         WHERE t.id = %s
         ORDER BY ulasan.timestamp DESC;
     """, (id,))
-    
+
     return JsonResponse({'ulasan': ulasan}, content_type='application/json')
+
 
 @csrf_exempt
 def save_watching_history(request):
@@ -475,27 +487,31 @@ def save_watching_history(request):
         username = request.session.get("username", "")
         start_date_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         watching_percentage = float(data['watching_percentage'])
-        
+
         try:
-            film = query("SELECT durasi_film AS durasi FROM FILM f WHERE f.id_tayangan = %s", (id_tayangan,))
+            film = query(
+                "SELECT durasi_film AS durasi FROM FILM f WHERE f.id_tayangan = %s", (id_tayangan,))
             if film:
-                durasi = film[0]['durasi'] 
+                durasi = film[0]['durasi']
             if not film:
-                series = query("SELECT SUM(e.durasi) AS durasi FROM EPISODE e WHERE e.id_series = %s", (id_tayangan,))
+                series = query(
+                    "SELECT SUM(e.durasi) AS durasi FROM EPISODE e WHERE e.id_series = %s", (id_tayangan,))
                 durasi = series[0]['durasi']
-            
+
             watching_seconds = (watching_percentage / 100) * (durasi * 60)
 
-            start_datetime = datetime.datetime.strptime(start_date_time, "%Y-%m-%d %H:%M:%S")
-            end_datetime = start_datetime + datetime.timedelta(seconds=watching_seconds)
+            start_datetime = datetime.datetime.strptime(
+                start_date_time, "%Y-%m-%d %H:%M:%S")
+            end_datetime = start_datetime + \
+                datetime.timedelta(seconds=watching_seconds)
             end_date_time = end_datetime.strftime("%Y-%m-%d %H:%M:%S")
 
             query("""
                 INSERT INTO riwayat_nonton (id_tayangan, username, start_date_time, end_date_time)
                 VALUES (%s, %s, %s, %s);
                 """,
-                (id_tayangan, username, start_date_time, end_date_time)
-            )
+                  (id_tayangan, username, start_date_time, end_date_time)
+                  )
             return JsonResponse({"status": "success", "message": "Watching history saved successfully."}, status=201)
 
         except Exception as e:
