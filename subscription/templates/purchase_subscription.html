@@ -28,11 +28,11 @@
                 </tr>
             </thead>
             <tbody id="subscriptionBody" class="bg-[#242831]">
-                <tr>
-                    <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">{{ package.nama }}</th>
+                <tr id="package-row">
+                    <!-- <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">{{ package.nama }}</th>
                     <td class="px-6 py-4">{{ package.harga }}</td>
                     <td class="px-6 py-4">{{ package.resolusi_layar }}</td>
-                    <td class="px-6 py-4">{{ package.dukungan_perangkat }}</td>
+                    <td class="px-6 py-4">{{ package.dukungan_perangkat }}</td> -->
                 </tr>
             </tbody>
         </table>
@@ -56,21 +56,42 @@
         </form>
     </div>
 </div>
-{% endblock content %}
 
-{% block script %}
 <script>
     const payment_field = document.getElementById('id_payment_method')
 
+    async function fetchPackageDetails() {
+        return fetch("{% url 'subscription:get_subscription_details_by_name' package_name %}").then((res) => res.json())
+    }
+
+    async function displayPackageDetails() {
+        const data = await fetchPackageDetails();
+        if (data.status === "success") {
+            const packageDetails = data.data.package;
+            if (packageDetails) {
+                document.getElementById('package-row').innerHTML = `
+                    <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">${packageDetails.nama}</th>
+                    <td class="px-6 py-4">${packageDetails.harga}</td>
+                    <td class="px-6 py-4">${packageDetails.resolusi_layar}</td>
+                    <td class="px-6 py-4">${packageDetails.dukungan_perangkat}</td>
+                `;
+            } else {
+                document.getElementById('subscriptionBody').innerHTML = '<tr><td colspan="4" class="text-center py-4">Package not found.</td></tr>';
+            }
+        } else {
+            document.getElementById('subscriptionBody').innerHTML = `<tr><td colspan="4" class="text-center py-4">${data.message}</td></tr>`;
+        }
+    }
+
     async function fetchSubscriptionEligibility() {
-        return fetch("{% url 'subscription:check_subscription_eligibility' %}").then((res) => res.json())
+        return fetch("{% url 'subscription:get_subscription_eligibilty' %}").then((res) => res.json())
     }
 
     async function subscriptionEligibility() {
         const data = await fetchSubscriptionEligibility()
         const btn = document.getElementById("purchase-btn");
 
-        if (data.status === "error") {
+        if (data.status === "error" && data.data.is_eligible === false) {
             btn.classList.remove("text-white", "border-white", "hover:bg-white","hover:text-[#242831]")
             btn.disabled = true;
             document.getElementById('not-eligible-msg').innerText = data.message
@@ -108,68 +129,27 @@
     }
 
     async function getCurrentActiveSubscription() {
-        return fetch("{% url 'subscription:get_user_active_package' %}").then((res) => res.json())
+        return fetch("{% url 'subscription:get_active_subscription' %}").then((res) => res.json())
     }
 
     async function purchaseSubscription(event) {
-        // event.preventDefault();
+        const data = await fetch("{% url 'subscription:purchase_subscription' %}", {
+            method: "POST",
+            body: JSON.stringify({
+                package_name: "{{ package_name }}",
+                payment_method: payment_field.value
+            })
+        }).then((res) => res.json())
 
-        const payment_method = payment_field.value
-        const data = await getCurrentActiveSubscription()
-        
         if (data.status === "success") {
-            const active_subscription = data.data.transaction
-
-            if (Object.keys(active_subscription).length === 0){
-                fetch("{% url 'subscription:add_subscription' %}", {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        package_name: "{{ package.nama }}",
-                        payment_method: payment_method
-                    }),
-                }).then(() => {
-                    window.location.href = "{% url 'subscription:render_subscription_manager' %}"
-                }).catch((err) => {
-                    alert("Failed to add subscription. Please try again later.");
-                    return;
-                })
-            } else {
-                fetch("{% url 'subscription:add_subscription' %}", {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        package_name: "{{ package.nama }}",
-                        payment_method: payment_method
-                    }),
-                }).catch((err) => {
-                    alert("Failed to add subscription. Please try again later.");
-                    return;
-                })
-
-                const new_subscription = await getCurrentActiveSubscription()
-                const new_active_subscription = new_subscription.data.transaction
-
-                fetch("{% url 'subscription:update_subscription'%}", {
-                    method: 'PUT',
-                    body: JSON.stringify({
-                        nama_paket: active_subscription.nama_paket,
-                        start_date_time: active_subscription.start_date_time,
-                        new_end_date: new_active_subscription.start_date_time,
-                        timestamp_pembayaran: active_subscription.timestamp_pembayaran,
-                        metode_pembayaran: active_subscription.metode_pembayaran,
-                    })
-                }).then(() => {
-                    window.location.href = "{% url 'subscription:render_subscription_manager' %}"
-                }).catch((err) => {
-                    alert("Failed to update subscription. Please try again later.");
-                    return;
-                })
-            }
+            window.location.href = "{% url 'subscription:render_subscription_details' %}"
         } else {
-            alert("Failed to get active package")
+            alert(data.message)
         }
     }
 
     validatePaymentMethodMsg()
     subscriptionEligibility()
+    displayPackageDetails()
 </script>
-{% endblock script %}
+{% endblock content %}

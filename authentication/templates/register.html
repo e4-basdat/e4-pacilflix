@@ -353,9 +353,11 @@
             )
         ) {
             btn.disabled = false;
+            btn.classList.remove("text-gray-600", "border-gray-600")
             btn.classList.add("text-white", "border-white", "hover:bg-white","hover:text-[#242831]")
         } else {
             btn.classList.remove("text-white", "border-white", "hover:bg-white","hover:text-[#242831]")
+            btn.classList.add("text-gray-600", "border-gray-600")
             btn.disabled = true;
         }
     }
