@@ -1,6 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    @media screen and (-webkit-min-device-pixel-ratio: 0) {
+     
+        input[type="range"]::-webkit-slider-thumb {
+            width: 15px;
+            -webkit-appearance: none;
+  			appearance: none;
+            height: 15px;
+            cursor: ew-resize;
+            background: #FFF;
+            box-shadow: -405px 0 0 400px #605E5C;
+            border-radius: 50%;
+            
+        }
+    }
+</style>
 <div class="mx-auto min-h-screen bg-[#242831] font-inter_tight pb-6">
 <div class="container mx-auto px-4 py-4" style="cursor: auto;">
     <div class="mb-12 text-slate-100 text-center">
@@ -35,10 +51,15 @@
                 {% for eps in release_episode %}
                     {% if episode_khusus.0.sub_judul == eps.sub_judul %}
                         <tr>
+                            <td class="text-left">
+                                <div class="mt-5">
+                                    <input id="input-range-{{ eps.id_series }}" class="w-full rounded-lg overflow-hidden appearance-none bg-gray-400 h-4 w-128" type="range" min="1" max="100" step="1" value="0" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
                             <td class="text-center">
-                                <a href="#" class="w-full block rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
-                                    Tonton 
-                                </a>
+                                <button type="submit" id="watch" onclick="saveWatchingHistory('{{ eps.id_series }}')" class="mt-5 w-full block rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">Watch</button>
                             </td>
                         </tr>
                     {% endif %}
@@ -57,7 +78,7 @@
                         <ul>
                             {% for eps in episode %}
                             <li class="mb-6 text-center">
-                                <a href="{% url 'shows:episode' judul=eps.judul sub_judul=eps.sub_judul %}" class="max-w-48 block rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                <a href="{% url 'shows:episode' id=eps.id sub_judul=eps.sub_judul %}" class="max-w-48 block rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
                                     Episode {{ forloop.counter }}
                                 </a>
                             </li>
@@ -107,4 +128,39 @@
     </div>
 </div>
 </div>
+<script>
+    function saveWatchingHistory(id_tayangan) {
+        const slider = document.getElementById(`input-range-${id_tayangan}`);
+        const watchingPercentage = slider.value;
+
+        console.log('watching_percentage:', watchingPercentage); // Debugging
+
+        const data = {
+            id_tayangan: id_tayangan,
+            watching_percentage: watchingPercentage
+        };
+
+        fetch("{% url 'shows:save_watching_history' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => {
+            if (response.ok) {
+                // Jika respons berhasil (status 201), perbarui halaman
+                window.location.reload();
+            } else {
+                // Tangkap pesan kesalahan jika diperlukan
+                return response.json().then(data => {
+                    throw new Error(data.message);
+                });
+            }
+        })
+        .catch((error) => {
+            alert('Error: ' + error.message);
+        });
+    }
+</script>
 {% endblock content %}

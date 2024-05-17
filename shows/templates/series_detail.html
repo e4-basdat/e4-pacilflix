@@ -25,7 +25,7 @@
                         <ul>
                             {% for eps in episode %}
                             <li class="mb-6">
-                                <a href="{% url 'shows:episode' judul=eps.judul sub_judul=eps.sub_judul %}" class="mt-5 w-full block rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
+                                <a href="{% url 'shows:episode' id=eps.id sub_judul=eps.sub_judul %}" class="mt-5 w-full block rounded-md font-bold border border-gray-600 px-12 py-3 duration-200 text-white border-white hover:bg-white hover:text-[#242831]">
                                     Episode {{ forloop.counter }}
                                 </a>
                             </li>
@@ -163,11 +163,11 @@
                     <form method="post" id="post-form" action="{% url 'shows:save_review' %}">
                         {% csrf_token %}
                         <div class="mb-4">
-                            <label for="deskripsi" class="block text-gray-700 font-bold mb-2">Review description:</label>
+                            <label for="deskripsi" class="block text-white font-bold mb-2">Review description:</label>
                             <textarea name="deskripsi" id="deskripsi" class="w-full px-3 py-2 border rounded-lg"></textarea>
                         </div>
                         <div class="mb-4">
-                            <label for="rating" class="block text-gray-700 font-bold mb-2">Rating:</label>
+                            <label for="rating" class="block text-white font-bold mb-2">Rating:</label>
                             <input type="number" name="rating" id="rating" class="w-full px-3 py-2 border rounded-lg">
                         </div>
                         <div class="flex items-center justify-end p-4 border-t">
@@ -181,6 +181,8 @@
             </div>
         </div>
     </div>
+
+    <div id="error-container" style="color: red;"></div>
 
 
     <!-- Daftar ulasan -->
@@ -210,7 +212,7 @@
     });
 
     function updateReview() {
-        fetch("{% url 'shows:update_review' judul=tayangan.0.judul %}")
+        fetch("{% url 'shows:update_review' id=tayangan.0.id %}")
         .then(response => response.json())
         .then(data => {
             const reviewContainer = document.getElementById('review-container');
@@ -249,8 +251,9 @@
                 rating: rating
             })
         })
-        .then(response => {
-            if (response.ok) {
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
                 // Update the review container with the new data
                 updateReview();
                 // Reset form
@@ -258,7 +261,15 @@
                 // Close modal
                 toggleModal();
             } else {
-                throw new Error('Failed to add review');
+                // If there is an error, display the error message
+                updateReview();
+                console.error('Error:', data.message);
+                // You can display the error message in an alert or in an error container on your page
+                // For example:
+                const errorContainer = document.getElementById('error-container');
+                errorContainer.innerText = data.message;
+                document.getElementById("post-form").reset();
+                toggleModal();
             }
         })
         .catch(error => console.error('Error:', error));
