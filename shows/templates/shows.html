@@ -73,7 +73,7 @@
                         <td class="px-6 py-4">{{forloop.counter}}</td>
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
                         <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
-                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4"><a href="{{item.url_video_trailer}}" class="text-blue-400 hover:underline">{{item.url_video_trailer}}</a></td>
                         <td class="px-6 py-4">{{item.release_date_trailer}}</td>
                         <td class="px-6 py-4">{{item.total_view_7_days}}</td>
                         <td class="px-6 py-4">
@@ -121,7 +121,7 @@
                     <tr class=" text-center">
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
                         <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
-                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4"><a href="{{item.url_video_trailer}}" class="text-blue-400 hover:underline">{{item.url_video_trailer}}</a></td>
                         <td class="px-6 py-4">{{item.release_date_trailer}}</td>
                         <td class="px-6 py-4">
                         {% for pengguna_row in pengguna %}
@@ -168,7 +168,7 @@
                     <tr class=" text-center">
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">{{item.judul}}</th>
                         <td class="px-6 py-4 max-w-sm">{{item.sinopsis_trailer}}</td>
-                        <td class="px-6 py-4">{{item.url_video_trailer}}</td>
+                        <td class="px-6 py-4"><a href="{{item.url_video_trailer}}" class="text-blue-400 hover:underline">{{item.url_video_trailer}}</a></td>
                         <td class="px-6 py-4">{{item.release_date_trailer}}</td>
                         <td class="px-6 py-4">
                         {% for pengguna_row in pengguna %}
@@ -231,7 +231,7 @@
                         <tr class=" text-center">
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-wrap">${item.judul}</th>
                         <td class="px-6 py-4 max-w-sm">${item.sinopsis_trailer}</td>
-                        <td class="px-6 py-4">${item.url_video_trailer}</td>
+                        <td class="px-6 py-4"><a href="${item.url_video_trailer}" class="text-blue-400 hover:underline">${item.url_video_trailer}</a></td>
                         <td class="px-6 py-4">${item.release_date_trailer}</td>
                         <td class="text-center">
                             ${isUserHasAccess(item.judul) ? `

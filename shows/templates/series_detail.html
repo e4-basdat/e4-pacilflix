@@ -56,87 +56,49 @@
             </table>
         </div>
     </div>
-    <div class="flex flex-col">
-        <div class="mb-4">
-            <table>
-                <tr>
-                    <td class="text-left">
-                        {% for t in tayangan %}
-                        <div class="mt-10 mb-2 text-slate-100">
-                            <p class="text-xl">Total view: {{t.total_view_all_time}}</p>
-                        </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        {% for t in tayangan %}
-                        <div class="mb-2 text-slate-100">
-                            <p class="text-xl">Average rating: {{t.rating_rata_rata}}</p>
-                        </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        {% for t in tayangan %}
-                        <div class="mb-2 text-slate-100">
-                            <p class="text-xl">Synopsis: {{t.sinopsis}}</p>
-                        </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        {% for t in tayangan %}
-                        <div class="mb-2 text-slate-100">
-                            <p class="text-xl">Genre: {{t.genre}}</p>
-                        </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        {% for t in tayangan %}
-                        <div class="mb-2 text-slate-100">
-                            <p class="text-xl">Country of origin: {{t.asal_negara}}</p>
-                        </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left pt-8">
-                        <div class="mb-2 text-slate-100">
-                            <p class="text-xl">Actors:</p>
-                        </div>
-                        {% for actor in pemain %}
-                        <span style="margin-left: 20px;" class="text-white">- {{ actor.nama }}</span><br>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        <div class="mb-2 text-slate-100">
-                            <p class="text-xl">Screenwriters:</p>
-                        </div>
-                        {% for actor in penulis %}
-                            <span style="margin-left: 20px;" class="text-white">- {{ actor.nama }}</span><br>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-left">
-                        <div class="mb-2 text-slate-100">
-                            <p class="text-xl">Director:</p>
-                        </div>
-                        {% for actor in sutradara %}
-                        <span style="margin-left: 20px;" class="text-white">- {{ actor.nama }}</span><br>
-                        {% endfor %}
-                    </td>
-                </tr>
-            </table>
+    <div class="flex flex-col space-y-4">
+        {% for t in tayangan %}
+        <div class="bg-[#333845] rounded-lg p-6 shadow-lg transition transform hover:-translate-y-1 hover:shadow-xl">
+            <div class="text-white mb-4">
+                <p class="text-2xl font-bold">Total View: {{t.total_view_all_time}}</p>
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl">Average Rating: {{t.rating_rata_rata}}</p>
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl">Synopsis: {{t.sinopsis}}</p>
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl">Genre: {{t.genre}}</p>
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl">Country of Origin: {{t.asal_negara}}</p>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="bg-[#333845] rounded-lg p-6 shadow-lg transition transform hover:-translate-y-1 hover:shadow-xl">
+            <div class="text-white mb-4">
+                <p class="text-xl font-bold">Actors</p>
+                {% for actor in pemain %}
+                <span class="block ml-5 mb-2">- {{ actor.nama }}</span>
+                {% endfor %}
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl font-bold">Screenwriters</p>
+                {% for writer in penulis %}
+                <span class="block ml-5 mb-2">- {{ writer.nama }}</span>
+                {% endfor %}
+            </div>
+            <div class="text-white mb-4">
+                <p class="text-xl font-bold">Director</p>
+                {% for director in sutradara %}
+                <span class="block ml-5 mb-2">- {{ director.nama }}</span>
+                {% endfor %}
+            </div>
         </div>
     </div>
+
     <div class="container mx-auto px-4 py-4">
         <div class="mb-12 text-slate-100 text-center">
             <h1 class="pt-16 pb-4 font-bold text-5xl drop-shadow-md"><span class="bg-gradient-to-r from-blue-500 to-red-500 text-transparent bg-clip-text">Review</span></h1>
@@ -217,16 +179,23 @@
         .then(data => {
             const reviewContainer = document.getElementById('review-container');
             reviewContainer.innerHTML = ''; // Clear previous content
-            
+
             data.ulasan.forEach(review => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('text-slate-100', 'mb-4');
-                listItem.innerHTML = `
-                    <span style="margin-left: 20px;" class="text-white">Username: ${review.username}</span><br>
-                    <span style="margin-left: 20px;" class="text-white">Deskripsi: ${review.deskripsi}</span><br>
-                    <span style="margin-left: 20px;" class="text-white">Rating: ${review.rating}</span><br>
+                const card = document.createElement('div');
+                card.classList.add('bg-[#333845]', 'rounded-lg', 'p-6', 'mb-4', 'shadow-lg', 'transition', 'transform', 'hover:-translate-y-1', 'hover:shadow-xl');
+
+                card.innerHTML = `
+                    <div class="text-white font-bold mb-2">
+                        <span class="block text-xl">Username: ${review.username}</span>
+                    </div>
+                    <div class="text-white mb-2">
+                        <span class="block">Deskripsi: ${review.deskripsi}</span>
+                    </div>
+                    <div class="text-white">
+                        <span class="block">Rating: ${review.rating}</span>
+                    </div>
                 `;
-                reviewContainer.appendChild(listItem);
+                reviewContainer.appendChild(card);
             });
         })
         .catch(error => console.error('Error:', error));
