@@ -128,7 +128,7 @@
                 const subscription = data.data.active_subscription;
                 const subscriptionBody = document.getElementById('subscriptionBody');
 
-                if (Object.keys(subscription).length === 0) {
+                if (subscription === null) {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">-</th>
@@ -218,7 +218,7 @@
 
                 allTransactionHistoryBody.innerHTML = '';
 
-                if (Object.keys(transactionHistory).length === 0){
+                if (transactionHistory === null){
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">-</th>
